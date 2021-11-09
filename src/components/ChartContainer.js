@@ -49,7 +49,7 @@ const ChartContainer = ({ reports, dataKey, trendline, title }) => {
 
   const CustomLabel = ({ x, y, value }) => {
     return (
-      <text x={x} y={y} dy={-7} fill="#82ca9d" fontSize={15} textAnchor="middle">
+      <text x={x} y={y} dy={-11} fill="#82ca9d" fontSize={15} textAnchor="middle">
         {value}
       </text>
     );
@@ -63,6 +63,32 @@ const ChartContainer = ({ reports, dataKey, trendline, title }) => {
     }
 
     return base;
+  };
+
+  const calculateDataMax = (maxValue) => {
+    switch (dataKey) {
+      case "cpi":
+        return maxValue + 0.3;
+        break;
+      case "conversions":
+        return maxValue + 7;
+        break;
+      default:
+        return maxValue;
+    }
+  };
+
+  const calculateDataMin = (minValue) => {
+    switch (dataKey) {
+      case "cpi":
+        return minValue - 0.15;
+        break;
+      case "conversions":
+        return minValue - 5;
+        break;
+      default:
+        return minValue;
+    }
   };
 
   return (
@@ -79,7 +105,7 @@ const ChartContainer = ({ reports, dataKey, trendline, title }) => {
         <YAxis
           dataKey={dataKey.toString()}
           label={{ angle: -90, position: "insideLeft", textAnchor: "middle" }}
-          domain={[(dataMin) => dataMin - 1, (dataMax) => dataMax + 5.5]}
+          domain={[(dataMin) => calculateDataMin(dataMin), (dataMax) => calculateDataMax(dataMax)]}
         />
 
         <Tooltip />
