@@ -1,4 +1,5 @@
-import { Header, TableReports, ChartContainer } from "./components";
+import { Header, TableReports, CpiChart, ConversionChart } from "./components";
+import { METRICS_KEYS } from "./constants";
 import { useReports } from "./hooks";
 
 function App() {
@@ -17,8 +18,8 @@ function App() {
       <Header title="Reports" />
       <TableReports reports={reports} />
       <div className="charts">
-        <ChartContainer reports={reports} dataKey="cpi" title="График ЦПА" trendline />
-        <ChartContainer reports={reports} dataKey="conversions" title="График конверсии" trendline />
+        <CpiChart title="График ЦПА" dataKey={METRICS_KEYS.CPI} reports={reports} trendline />
+        <ConversionChart title="График конверсии" dataKey={METRICS_KEYS.CONVERSIONS} reports={reports} trendline />
       </div>
     </div>
   );

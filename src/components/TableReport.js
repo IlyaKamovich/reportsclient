@@ -1,11 +1,13 @@
+import { TABLE_REPORT_CAPTIONS } from "../constants";
+
 const TableReports = ({ reports }) => {
   return (
     <table className="reports">
       <thead>
         <tr>
-          <th>Targetolog</th>
-          <th>Conversions</th>
-          <th>CPI</th>
+          {TABLE_REPORT_CAPTIONS.map((caption, index) => {
+            return <th key={index}>{caption}</th>;
+          })}
         </tr>
       </thead>
 
