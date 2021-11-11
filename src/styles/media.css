@@ -1,0 +1,13 @@
+@media screen and (max-width: 1240px) {
+  .charts {
+    flex-direction: column;
+  }
+
+  .chart {
+    max-width: 95%;
+  }
+
+  .chart h2 {
+    padding-left: 60px;
+  }
+}

@@ -1,6 +1,6 @@
 const calculateTrendline = (values_y) => {
   if (!values_y || !values_y.length) {
-    throw new Error("The parametr values_y must be required");
+    throw new Error('The parametr values_y must be required');
   }
 
   var values_x = Array.from({ length: values_y.length }, (_, i) => i + 1);
@@ -17,8 +17,8 @@ const calculateTrendline = (values_y) => {
   var y = 0;
   var values_length = values_x.length;
 
-  if (values_length != values_y.length) {
-    throw new Error("The parameters values_x and values_y need to have same size!");
+  if (values_length !== values_y.length) {
+    throw new Error('The parameters values_x and values_y need to have same size!');
   }
 
   /*

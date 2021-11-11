@@ -1,4 +1,6 @@
-const conversionChartSettings = {
+import { IChartSessings } from '../../interfaces/chart';
+
+const chartSettings: IChartSessings = {
   xAxisPadding: {
     left: 15,
     right: 15,
@@ -14,4 +16,4 @@ const conversionChartSettings = {
   },
 };
 
-export { conversionChartSettings };
+export { chartSettings };

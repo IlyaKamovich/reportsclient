@@ -1,14 +1,12 @@
-import { TABLE_PERCENT_YAXIS } from "../constants";
-import { calculateTrendline } from "../utils";
+import { TABLE_PERCENT_YAXIS } from '../../constants';
+import { calculateTrendline } from '../../components/chart/trendline';
 
 class ChartHelper {
   static getReportsByKey = (reports, dataKey, trendline) => {
-    const reportsByKey = reports.map((report) => {
-      return {
-        targetolog: report.targetolog,
-        [dataKey]: report.metrics[dataKey],
-      };
-    });
+    const reportsByKey = reports.map((report) => ({
+      targetolog: report.targetolog,
+      [dataKey]: report.metrics[dataKey],
+    }));
 
     if (trendline) {
       const reportWithTrendline = this.addToChartTrendline(reportsByKey, dataKey);
@@ -23,9 +21,7 @@ class ChartHelper {
 
     const trendlineData = calculateTrendline(reports);
 
-    const reportWithTrendline = reportsByKey.map((item, index) => {
-      return { ...item, trendline: trendlineData[index] };
-    });
+    const reportWithTrendline = reportsByKey.map((item, index) => ({ ...item, trendline: trendlineData[index] }));
 
     return reportWithTrendline;
   };
