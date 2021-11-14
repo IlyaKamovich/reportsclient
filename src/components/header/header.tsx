@@ -1,14 +1,18 @@
 import React from 'react';
-import { IHeader } from '../../interfaces/header';
 
-const Header: React.FC<IHeader> = (props) => {
+import './header.css';
+interface Props {
+  title: string;
+}
+
+const Header: React.FC<Props> = (props) => {
   const { title } = props;
 
   return (
-    <header>
+    <header className="header">
       <h1 className="header-title">{title}</h1>
     </header>
   );
 };
 
-export { Header };
+export default Header;

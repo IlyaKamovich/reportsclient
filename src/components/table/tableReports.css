@@ -1,0 +1,29 @@
+.reports {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.reports td,
+.reports th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  height: 50px;
+}
+
+.reports tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.reports tr:hover {
+  background-color: #ddd;
+}
+
+.reports th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #2c3e50;
+  color: white;
+}

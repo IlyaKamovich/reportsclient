@@ -1,10 +1,31 @@
 import React from 'react';
-import { TableReports, Header, Chart } from './components';
-import { METRICS_KEYS } from './constants';
-import { useReports } from './hooks';
+import { useReports } from './components/Chart/useReports';
+import { MetricsKeys } from './components/Chart/constants';
+import Header from 'components/Header/Header';
+import TableReports from 'components/Table/TableReport';
+import Chart from 'components/Chart/Chart';
+
+import './styles/index.css';
+
+const marketingCharts = [
+  {
+    title: 'График ЦПА',
+    chartColor: '#c0392b',
+    trendlineColor: '#e74c3c',
+    dataKey: MetricsKeys.CPI,
+    trendline: true,
+  },
+  {
+    title: 'График конверсии',
+    chartColor: '#c0392b',
+    trendlineColor: '#e74c3c',
+    dataKey: MetricsKeys.CONVERSIONS,
+    trendline: true,
+  },
+];
 
 const App: React.FC = () => {
-  const [reports, loading, error, errorMessage] = useReports('https://reportstarget.herokuapp.com/reports');
+  const { reports, loading, error, errorMessage } = useReports('https://reportstarget.herokuapp.com/reports');
 
   if (loading) {
     return (
@@ -27,8 +48,9 @@ const App: React.FC = () => {
       <Header title="Reports" />
       <TableReports reports={reports} />
       <div className="charts">
-        <Chart title="График ЦПА" dataKey={METRICS_KEYS.CPI} reports={reports} trendline />
-        <Chart title="График конверсии" dataKey={METRICS_KEYS.CONVERSIONS} reports={reports} trendline />
+        {marketingCharts.map((props, index) => (
+          <Chart {...props} key={index} reports={reports} />
+        ))}
       </div>
     </div>
   );

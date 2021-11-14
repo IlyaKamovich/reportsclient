@@ -1,9 +1,15 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { IReport, IReports } from './models';
 
-import { IReports, IReport } from '../interfaces/reports';
+interface IUseReports {
+    reports: Array<IReport>,
+    loading: boolean;
+    error: boolean;
+    errorMessage: string
+}
 
-const useReports = (endPoint: string): [IReport[], boolean, boolean, string] => {
+const useReports = (endPoint: string): IUseReports => {
   const [reports, setReports] = useState<IReport[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
@@ -21,16 +27,15 @@ const useReports = (endPoint: string): [IReport[], boolean, boolean, string] => 
       setReports(reportsToday);
       setLoading(false);
     } catch (e: any) {
-        setError(true);
-        setErrorMessage(e.message);
+      setError(true);
+      setErrorMessage(e.message);
     }
   };
 
-  const getFilteredReports = (reports: Array<IReport>): Array<IReport> => {
-      return reports.filter((report) => new Date(report.date).getDate() === new Date().getDate())
-  };
+  const getFilteredReports = (reports: Array<IReport>): Array<IReport> => reports.filter((report) => new Date(report.date).getDate() === new Date().getDate());
 
-  return [reports, loading, error, errorMessage];
+
+  return {reports, loading, error, errorMessage};
 };
 
 export { useReports };

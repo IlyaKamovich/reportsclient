@@ -1,15 +1,20 @@
 import React from 'react';
+interface Props {
+  x?: number;
+  y?: number;
+  value?: number;
+  chartColor: string;
+  labelFontSize: number;
+}
 
-import { IChartLabel } from '../../interfaces/chart';
-
-const ChartLabel: React.FC<IChartLabel> = (props) => {
-  const { x, y, value } = props;
+const ChartLabel: React.FC<Props> = (props) => {
+  const { x, y, value, chartColor, labelFontSize } = props;
 
   return (
-    <text x={x} y={y} dy={-13} fill="#c0392b" fontSize={15} textAnchor="middle">
+    <text x={x} y={y} dy={-10} fill={chartColor} fontSize={labelFontSize} textAnchor="middle">
       {value}
     </text>
   );
 };
 
-export { ChartLabel };
+export default ChartLabel;

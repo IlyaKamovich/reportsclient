@@ -1,27 +1,40 @@
 import React, { useState } from 'react';
-import { ResponsiveContainer, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Line } from 'recharts';
-//import { ChartLabel } from './chartLabel'
-import { ChartLegend } from './chartLegend';
-import { chartSettings as Config } from './settings';
+import { ResponsiveContainer, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Line, LabelList } from 'recharts';
+import ChartLabel from './ChartLabel';
+import ChartLegend from './ChartLegend';
+import { chartSettings as Config, MetricsKeys } from './constants';
 import { ChartHelper } from './helpers';
-import { IChart } from '../../interfaces/chart';
+import { IReport } from './models';
 
-const Chart: React.FC<IChart> = (props) => {
-  const { title, dataKey, reports, trendline } = props;
+import './chart.css';
 
+interface Props {
+  title: string;
+  dataKey: MetricsKeys;
+  reports: Array<IReport>;
+  trendline: boolean;
+  chartColor: string;
+  trendlineColor: string;
+}
+
+const Chart: React.FC<Props> = (props) => {
+  const { title, dataKey, reports, trendline, chartColor, trendlineColor } = props;
+  const { responsiveContainer, lineChart, dotSettings, label, trendlineDot, xAxisPadding, yAxisLabel } = Config;
   const [currentReports] = useState(ChartHelper.getReportsByKey(reports, dataKey, trendline));
 
   return (
     <div className="chart">
       <h2>{title}</h2>
-      <ResponsiveContainer width="100%" aspect={5.0 / 2.0}>
-        <LineChart data={currentReports} margin={{ right: 50 }}>
-          <Line dataKey={dataKey} stroke="#c0392b" dot={Config.dotSettings} />
-          {trendline && <Line dataKey="trendline" stroke="#e74c3c" dot={false} />}
-          <XAxis dataKey="targetolog" padding={Config.xAxisPadding} />
+      <ResponsiveContainer width={responsiveContainer.width} aspect={responsiveContainer.aspect}>
+        <LineChart data={currentReports} margin={lineChart.margin}>
+          <Line dataKey={dataKey} stroke={chartColor} dot={dotSettings}>
+            <LabelList content={<ChartLabel chartColor={chartColor} labelFontSize={label.fontSize} />} />
+          </Line>
+          {trendline && <Line dataKey="trendline" stroke={trendlineColor} dot={trendlineDot.item} />}
+          <XAxis dataKey="targetolog" padding={xAxisPadding} />
           <YAxis
-            dataKey={dataKey.toString()}
-            label={Config.yAxisLabel}
+            dataKey={dataKey}
+            label={yAxisLabel}
             domain={[
               (dataMin: number) => ChartHelper.calculateDataMin(dataMin),
               (dataMax: number) => ChartHelper.calculateDataMax(dataMax),
@@ -36,6 +49,4 @@ const Chart: React.FC<IChart> = (props) => {
   );
 };
 
-export { Chart };
-
-// label={<ChartLabel x={10} y={10} value={15} />}
+export default Chart;

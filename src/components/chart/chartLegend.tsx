@@ -1,11 +1,17 @@
 import React from 'react';
 import { Legend } from 'recharts';
-import { IChartLegend, ILegendData } from '../../interfaces/chart';
+import { MetricsKeys } from './constants';
+import { ILegendData } from './models';
 
-const ChartLegend: React.FC<IChartLegend> = (props) => {
+interface Props {
+  dataKey: MetricsKeys;
+  trendline: boolean;
+}
+
+const ChartLegend: React.FC<Props> = (props) => {
   const { dataKey, trendline } = props;
 
-  const getLegendData = (dataKey: string, trendline: boolean): Array<ILegendData> => {
+  const getLegendData = (dataKey: MetricsKeys, trendline: boolean): Array<ILegendData> => {
     const base: Array<ILegendData> = [{ id: dataKey, value: dataKey, type: 'circle', color: '#c0392b' }];
 
     if (trendline) {
@@ -18,4 +24,4 @@ const ChartLegend: React.FC<IChartLegend> = (props) => {
   return <Legend verticalAlign="top" height={36} payload={getLegendData(dataKey, trendline)} />;
 };
 
-export { ChartLegend };
+export default ChartLegend;

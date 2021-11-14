@@ -1,8 +1,9 @@
-import { TABLE_PERCENT_YAXIS } from '../../constants';
-import { calculateTrendline } from '../../components/chart/trendline';
+import { MetricsKeys, TABLE_PERCENT_YAXIS } from './constants';
+import { IReport, IReportsByKey, IReportsWithTrendline } from './models';
+import { calculateTrendline } from './trendline';
 
 class ChartHelper {
-  static getReportsByKey = (reports, dataKey, trendline) => {
+  static getReportsByKey = (reports: Array<IReport>, dataKey: MetricsKeys, trendline?: boolean): Array<IReportsByKey> | Array<IReportsWithTrendline> => {
     const reportsByKey = reports.map((report) => ({
       targetolog: report.targetolog,
       [dataKey]: report.metrics[dataKey],
@@ -16,26 +17,24 @@ class ChartHelper {
     return reportsByKey;
   };
 
-  static addToChartTrendline = (reportsByKey, dataKey) => {
-    const reports = reportsByKey.map((item) => item[dataKey]);
-
+  static addToChartTrendline = (reportsByKey: Array<IReportsByKey>, dataKey: MetricsKeys): Array<IReportsWithTrendline> => {
+    const reports = reportsByKey.map((item) => item[dataKey]) as Array<number>;
     const trendlineData = calculateTrendline(reports);
 
     const reportWithTrendline = reportsByKey.map((item, index) => ({ ...item, trendline: trendlineData[index] }));
-
     return reportWithTrendline;
   };
 
-  static calculatePercentValue = (value) => Math.ceil((TABLE_PERCENT_YAXIS * value) / 100);
+  static calculatePercentValue = (value: number): number => Math.ceil((TABLE_PERCENT_YAXIS * value) / 100);
 
-  static calculateDataMax = (maxValue) => {
+  static calculateDataMax = (maxValue: number): number => {
     const percentageValue = this.calculatePercentValue(maxValue);
     const updatedMaxValue = maxValue + percentageValue;
 
     return updatedMaxValue;
   };
 
-  static calculateDataMin = (minValue) => {
+  static calculateDataMin = (minValue: number): number => {
     const percentageValue = this.calculatePercentValue(minValue);
     const updatedMinValue = minValue - percentageValue;
 
