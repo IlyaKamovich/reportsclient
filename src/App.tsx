@@ -48,8 +48,8 @@ const App: React.FC = () => {
       <Header title="Reports" />
       <TableReports reports={reports} />
       <div className="charts">
-        {marketingCharts.map((props, index) => (
-          <Chart {...props} key={index} reports={reports} />
+        {marketingCharts.map((props) => (
+          <Chart {...props} key={props.dataKey} reports={reports} />
         ))}
       </div>
     </div>
