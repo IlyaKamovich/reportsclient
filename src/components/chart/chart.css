@@ -1,0 +1,32 @@
+.charts {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.chart {
+  flex: 50%;
+  max-width: 45%;
+  max-height: 800px;
+}
+
+.chart h2 {
+  padding-left: 110px;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
+@media screen and (max-width: 1240px) {
+  .charts {
+    flex-direction: column;
+  }
+
+  .chart {
+    max-width: 95%;
+  }
+
+  .chart h2 {
+    padding-left: 60px;
+  }
+}

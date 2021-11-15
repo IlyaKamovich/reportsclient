@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "max-classes-per-file": {
+      "options": [2]
+    },
+    "no-default-export": true,
+    "no-submodule-imports": {
+      "options": ["tsutils"]
+    },
+    "restrict-plus-operands": true,
+    "strict-boolean-expressions": true,
+    "semicolon": [true, "always"]
+  }
+}
