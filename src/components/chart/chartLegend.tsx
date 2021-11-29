@@ -1,27 +1,35 @@
 import React from 'react';
 import { Legend } from 'recharts';
-import { MetricsKeys } from './constants';
-import { ILegendData } from './models';
+import { IPayload, IReport, MetricsKeys } from './models';
 
 interface Props {
-  dataKey: MetricsKeys;
-  trendline: boolean;
+  dataKey?: MetricsKeys;
+  trendline?: boolean;
+  payload?: Array<IPayload>;
+  reports: Array<IReport>;
 }
 
 const ChartLegend: React.FC<Props> = (props) => {
-  const { dataKey, trendline } = props;
+  const { payload, reports } = props;
 
-  const getLegendData = (dataKey: MetricsKeys, trendline: boolean): Array<ILegendData> => {
-    const base: Array<ILegendData> = [{ id: dataKey, value: dataKey, type: 'circle', color: '#c0392b' }];
-
-    if (trendline) {
-      base.push({ id: 'trendline', value: 'trendline', type: 'line', color: '#e74c3c' });
+  const modifyLegendPayload = () => {
+    if (!payload) {
+      return [];
     }
 
-    return base;
+    const modifiedLegendPayload = payload.map((payloadData) => {
+      const payloadValue = payloadData.value.split('.')[0];
+
+      return {
+        ...payloadData,
+        value: reports.find((report) => report.targetologId === payloadValue)?.targetologName,
+      };
+    });
+
+    return modifiedLegendPayload;
   };
 
-  return <Legend verticalAlign="top" height={36} payload={getLegendData(dataKey, trendline)} />;
+  return <Legend payload={modifyLegendPayload()} />;
 };
 
 export default ChartLegend;

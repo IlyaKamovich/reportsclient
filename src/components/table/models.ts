@@ -1,3 +1,3 @@
 export interface ITableCaptions {
-    key: string;
+  key: string;
 }

@@ -1,4 +1,3 @@
-import { ITableCaptions } from "./models";
+import { ITableCaptions } from './models';
 
-export const TABLE_REPORT_CAPTIONS: Array<ITableCaptions> = [{key: "Targetolog"}, {key: "Conversions"}, {key: "Cpi"}];
-
+export const TABLE_REPORT_CAPTIONS: Array<ITableCaptions> = [{ key: 'Conversions' }, { key: 'Cpi' }];

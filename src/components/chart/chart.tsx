@@ -1,51 +1,79 @@
-import React, { useState } from 'react';
-import { ResponsiveContainer, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Line, LabelList } from 'recharts';
-import ChartLabel from './ChartLabel';
-import ChartLegend from './ChartLegend';
-import { chartSettings as Config, MetricsKeys } from './constants';
+import React, { useMemo } from 'react';
+import { ResponsiveContainer, LineChart, XAxis, YAxis, CartesianGrid, Line, LabelList, Legend } from 'recharts';
+import { chartSettings as Config, lineChartColors } from './constants';
+import { IReport, MetricsKeys } from './models';
 import { ChartHelper } from './helpers';
-import { IReport } from './models';
-
+import ChartLegend from './ChartLegend';
+import ChartDot from './ChartDot';
 import './chart.css';
 
 interface Props {
-  title: string;
   dataKey: MetricsKeys;
   reports: Array<IReport>;
   trendline: boolean;
-  chartColor: string;
-  trendlineColor: string;
 }
 
 const Chart: React.FC<Props> = (props) => {
-  const { title, dataKey, reports, trendline, chartColor, trendlineColor } = props;
-  const { responsiveContainer, lineChart, dotSettings, label, trendlineDot, xAxisPadding, yAxisLabel } = Config;
-  const [currentReports] = useState(ChartHelper.getReportsByKey(reports, dataKey, trendline));
+  const { dataKey, reports } = props;
+  const { chartMargin, responsiveContainer, label, yAxisLabel, yAxisPadding, xAxisPadding, dotSettings, line, legend } = Config;
+  const groupedReports = useMemo(() => ChartHelper.groupReportsByDate(reports), [reports]);
+
+  const drawСhartLines = () => {
+    const dataSet = groupedReports[0];
+    const lines = [];
+    let colorIndex = 0;
+
+    for (let i in dataSet) {
+      if (dataSet.hasOwnProperty(i) && i !== 'date') {
+        lines.push(
+          <Line
+            fill={lineChartColors[colorIndex]}
+            dataKey={`${i}.${dataKey}`}
+            stroke={lineChartColors[colorIndex]}
+            strokeWidth={line.strokeWidth}
+            dot={<ChartDot colorIndex={colorIndex} strokeWidth={dotSettings.strokeWidth} />}
+            key={i}
+          >
+            <LabelList
+              dy={label.dy}
+              fontWeight={label.fontWeight}
+              fill={lineChartColors[colorIndex]}
+              fontSize={label.fontSize}
+              textAnchor={label.textAnchor}
+            />
+          </Line>
+        );
+
+        colorIndex++;
+      }
+    }
+
+    return lines;
+  };
 
   return (
-    <div className="chart">
-      <h2>{title}</h2>
-      <ResponsiveContainer width={responsiveContainer.width} aspect={responsiveContainer.aspect}>
-        <LineChart data={currentReports} margin={lineChart.margin}>
-          <Line dataKey={dataKey} stroke={chartColor} dot={dotSettings}>
-            <LabelList content={<ChartLabel chartColor={chartColor} labelFontSize={label.fontSize} />} />
-          </Line>
-          {trendline && <Line dataKey="trendline" stroke={trendlineColor} dot={trendlineDot.item} />}
-          <XAxis dataKey="targetolog" padding={xAxisPadding} />
-          <YAxis
-            dataKey={dataKey}
-            label={yAxisLabel}
-            domain={[
-              (dataMin: number) => ChartHelper.calculateDataMin(dataMin),
-              (dataMax: number) => ChartHelper.calculateDataMax(dataMax),
-            ]}
-          />
-          <Tooltip />
-          <ChartLegend dataKey={dataKey} trendline={trendline} />
-          <CartesianGrid vertical={false} />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    <ResponsiveContainer width={responsiveContainer.width} aspect={responsiveContainer.aspect}>
+      <LineChart margin={chartMargin} data={groupedReports}>
+        {drawСhartLines()}
+        <XAxis padding={xAxisPadding} dataKey="date" />
+        <YAxis
+          padding={yAxisPadding}
+          label={yAxisLabel}
+          domain={[
+            (dataMin: number) => ChartHelper.calculateDataMin(dataMin),
+            (dataMax: number) => ChartHelper.calculateDataMax(dataMax, dataKey),
+          ]}
+        />
+        <Legend
+          verticalAlign={legend.verticalAlign}
+          align={legend.align}
+          iconType={legend.iconType}
+          height={legend.height}
+          content={<ChartLegend reports={reports} />}
+        />
+        <CartesianGrid vertical={false} />
+      </LineChart>
+    </ResponsiveContainer>
   );
 };
 

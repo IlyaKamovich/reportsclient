@@ -1,55 +1,23 @@
 import React from 'react';
-import { useReports } from './components/Chart/useReports';
-import { MetricsKeys } from './components/Chart/constants';
-import Header from 'components/Header/Header';
-import TableReports from 'components/Table/TableReport';
-import Chart from 'components/Chart/Chart';
-
+import { SourceKeys, MetricsKeys } from 'components/Chart/models';
+import ChartContainer from 'components/Chart/ChartContainer';
+import TableContainer from 'components/Table/TableContainer';
 import './styles/index.css';
 
 const marketingCharts = [
-  {
-    title: 'График ЦПА',
-    chartColor: '#c0392b',
-    trendlineColor: '#e74c3c',
-    dataKey: MetricsKeys.CPI,
-    trendline: true,
-  },
-  {
-    title: 'График конверсии',
-    chartColor: '#c0392b',
-    trendlineColor: '#e74c3c',
-    dataKey: MetricsKeys.CONVERSIONS,
-    trendline: true,
-  },
+  { source: SourceKeys.FB, dataKey: MetricsKeys.CONVERSIONS, title: 'График конверсии' },
+  { source: SourceKeys.FB, dataKey: MetricsKeys.CPI, title: 'График ЦПЛ' },
+  { source: SourceKeys.TT, dataKey: MetricsKeys.CONVERSIONS, title: 'График конверсии' },
+  { source: SourceKeys.TT, dataKey: MetricsKeys.CPI, title: 'График ЦПЛ' },
 ];
 
 const App: React.FC = () => {
-  const { reports, loading, error, errorMessage } = useReports('https://reportstarget.herokuapp.com/reports');
-
-  if (loading) {
-    return (
-      <div className="loading">
-        <h1>Loading</h1>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="error">
-        <h1>{errorMessage}</h1>
-      </div>
-    );
-  }
-
   return (
     <div className="App">
-      <Header title="Reports" />
-      <TableReports reports={reports} />
+      <TableContainer />
       <div className="charts">
-        {marketingCharts.map((props) => (
-          <Chart {...props} key={props.dataKey} reports={reports} />
+        {marketingCharts.map((item, index) => (
+          <ChartContainer {...item} key={index} />
         ))}
       </div>
     </div>
