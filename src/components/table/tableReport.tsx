@@ -1,37 +1,22 @@
 import React from 'react';
-import _pick from 'lodash/pick';
-import _map from 'lodash/map';
-import { TABLE_REPORT_CAPTIONS } from './constants';
-import { IReports } from '../Chart/models';
-
+import { IReport } from 'components/Chart/models';
+import TableHeader from './TableHeader';
+import TableBody from './TableBody';
+import TableFooter from './TableFooter';
 import './tableReports.css';
 
-const TableReports: React.FC<IReports> = (props) => {
+interface Props {
+  reports: Array<IReport>;
+}
+
+const TableReports: React.FC<Props> = (props) => {
   const { reports } = props;
 
   return (
     <table className="reports">
-      <thead>
-        <tr>
-          {_map(TABLE_REPORT_CAPTIONS, ({ key }) => (
-            <th key={key}>{key}</th>
-          ))}
-        </tr>
-      </thead>
-
-      <tbody>
-        {_map(reports, ({ targetolog, metrics }, index) => {
-          const { conversions, cpi } = _pick(metrics, ['conversions', 'cpi']);
-
-          return (
-            <tr key={index}>
-              <td>{targetolog}</td>
-              <td>{conversions}</td>
-              <td>{cpi}</td>
-            </tr>
-          );
-        })}
-      </tbody>
+      <TableHeader reports={reports} />
+      <TableBody reports={reports} />
+      <TableFooter reports={reports} />
     </table>
   );
 };

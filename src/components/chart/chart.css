@@ -8,7 +8,7 @@
 .chart {
   flex: 50%;
   max-width: 45%;
-  max-height: 800px;
+  max-height: 1200px;
 }
 
 .chart h2 {
@@ -17,13 +17,19 @@
   padding-top: 15px;
 }
 
+.recharts-legend-wrapper {
+  left: 50% !important;
+  transform: translate(-50%, 0);
+}
+
 @media screen and (max-width: 1240px) {
   .charts {
     flex-direction: column;
   }
 
   .chart {
-    max-width: 95%;
+    max-width: 99%;
+    width: 100%;
   }
 
   .chart h2 {

@@ -1,12 +1,13 @@
-import { MetricsKeys } from './constants';
-
 export interface IReports {
   reports: Array<IReport>;
 }
 
 export interface IReport {
+  _id: string;
   date: Date;
-  targetolog: string;
+  targetologId: string;
+  targetologName: string;
+  formattedDate: Date;
   metrics: {
     conversions: number;
     cpi: number;
@@ -20,16 +21,26 @@ export interface ILegendData {
   color: string;
 }
 
+//legend vertical alignment type
+export type VerticalAlignmentType = 'top' | 'bottom' | 'middle';
+
+//legend horizontal alignment type
+export type HorizontalAlignmentType = 'center' | 'left' | 'right';
+
 export interface IChartSessings {
   responsiveContainer: {
     width: string;
     aspect: number;
   };
-  lineChart: {
-    margin: {
-        right: number
-    }
-  },
+  chartMargin: {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+  };
+  line: {
+    strokeWidth: number;
+  };
   xAxisPadding: {
     left: number;
     right: number;
@@ -39,16 +50,28 @@ export interface IChartSessings {
     position: string;
     textAnchor: string;
   };
+  yAxisPadding: {
+    top: number;
+    bottom: number;
+  };
   dotSettings: {
-    stroke: string;
     strokeWidth: number;
   };
   label: {
-      fontSize: number;
-  }
+    fontSize: number;
+    fontWeight: number;
+    dy: number;
+    textAnchor: string;
+  };
   trendlineDot: {
-      item: boolean;
-  }
+    item: boolean;
+  };
+  legend: {
+    height: number;
+    verticalAlign: VerticalAlignmentType;
+    align: HorizontalAlignmentType;
+    iconType: string;
+  };
 }
 
 export declare type LegendType =
@@ -64,11 +87,63 @@ export declare type LegendType =
   | 'wye'
   | 'none';
 
-  export interface IReportsByKey {
-    [x: string]: string | number;
-    targetolog: string;
-  }
-  
+export interface IReportsByKey {
+  [x: string]: string | number;
+  targetolog: string;
+}
+
 export interface IReportsWithTrendline extends IReportsByKey {
-    trendline: number;
-  }
+  trendline: number;
+}
+
+export enum SourceKeys {
+  FB = 'FB',
+  TT = 'TT',
+}
+
+export interface ITargetologs {
+  targetologs: Array<ITargetolog>;
+}
+
+export interface ITargetolog {
+  _id: string;
+  name: string;
+  source: string;
+  __v: number;
+}
+
+export interface IUseChartLegend {
+  legendPayload: any;
+  loading: boolean;
+  error: boolean;
+  errorMessage: string;
+}
+
+export interface IPayload {
+  color: string;
+  dataKey: string;
+  inactive: boolean;
+  type: LegendType;
+  value: string;
+}
+
+export interface IGroupedReport {
+  formattedDate: Date;
+  [key: string]: Date | { cpi: number; conversions: number };
+}
+
+export interface ICurrentReports {
+  date: string;
+  [x: string]: string;
+}
+
+//КЛЮЧИ ДЛЯ ОТРИСОВКИ ГРАФИКА
+export enum MetricsKeys {
+  CPI = 'cpi',
+  CONVERSIONS = 'conversions',
+}
+
+export interface IMetricsKeys {
+  CPI: string;
+  CONVERSIONS: string;
+}

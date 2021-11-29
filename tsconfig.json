@@ -1,10 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ESNext",
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "ES2017",
+      "ES2019",
+      "es5",
+      "es6",
+      "es2015.collection",
+      "ESNext"
     ],
     "baseUrl": "src",
     "typeRoots": ["types"],
@@ -22,7 +28,7 @@
     "jsx": "react-jsx",
     "sourceMap": true,
     "declaration": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "incremental": true,
     "noFallthroughCasesInSwitch": true
@@ -35,3 +41,4 @@
     "build"
   ]
 }
+
