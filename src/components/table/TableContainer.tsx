@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useReports } from 'components/Chart/useReports';
 import TableReports from './TableReport';
+import TableContainer from '@material-ui/core/TableContainer';
+import Paper from '@material-ui/core/Paper';
 
-const TableContainer: React.FC = () => {
+const Container: React.FC = () => {
   const [startWith] = useState('2021-11-17T00:00:00.000+00:00');
   const [endOn] = useState('2021-11-18T00:00:00.000+00:00');
   const { reports, loading, error, errorMessage } = useReports('http://localhost:5000/reports/sourse', startWith, endOn);
@@ -23,7 +25,11 @@ const TableContainer: React.FC = () => {
     );
   }
 
-  return <TableReports reports={reports} />;
+  return (
+    <TableContainer component={Paper}>
+      <TableReports reports={reports} />
+    </TableContainer>
+  );
 };
 
-export default TableContainer;
+export default Container;

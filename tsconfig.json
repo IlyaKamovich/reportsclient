@@ -31,7 +31,9 @@
     "noUnusedLocals": false,
     "noUnusedParameters": true,
     "incremental": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
   },
   "include": [
     "src/**/*"
@@ -41,4 +43,5 @@
     "build"
   ]
 }
-
+ 
+   
