@@ -1,28 +1,41 @@
 import React from 'react';
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import { makeStyles } from '@material-ui/core/styles';
 import { IReport } from 'components/Chart/models';
 
 interface Props {
   reports: Array<IReport>;
 }
 
-const TableBody: React.FC<Props> = (props) => {
+const useStyles = makeStyles(() => ({
+  tableRow: {
+    '&:nth-child(even)': {
+      backgroundColor: '#f2f2f2',
+    },
+  },
+}));
+
+const Body: React.FC<Props> = (props) => {
   const { reports } = props;
+  const classes = useStyles();
 
   return (
-    <tbody>
+    <TableBody>
       {reports.map(({ targetologName, metrics }, index) => {
         const { conversions, cpi } = metrics;
 
         return (
-          <tr key={index}>
-            <td>{targetologName}</td>
-            <td>{conversions}</td>
-            <td>{cpi}</td>
-          </tr>
+          <TableRow className={classes.tableRow} key={index}>
+            <TableCell>{targetologName}</TableCell>
+            <TableCell>{conversions}</TableCell>
+            <TableCell>{cpi}</TableCell>
+          </TableRow>
         );
       })}
-    </tbody>
+    </TableBody>
   );
 };
 
-export default TableBody;
+export default Body;

@@ -1,4 +1,8 @@
 import React from 'react';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import { makeStyles } from '@material-ui/core/styles';
 import { IReport } from 'components/Chart/models';
 import { TABLE_REPORT_CAPTIONS } from './constants';
 
@@ -6,18 +10,34 @@ interface Props {
   reports: Array<IReport>;
 }
 
+const useStyles = makeStyles(() => ({
+  headerRow: {
+    background: '#7bed9f',
+  },
+  headerCell: {
+    fontWeight: 500,
+    fontSize: '21px',
+    cursor: 'pointer',
+  },
+}));
+
 const TableHeader: React.FC<Props> = (props) => {
   const { reports } = props;
+  const classes = useStyles();
 
   return (
-    <thead>
-      <tr>
-        <th className="reports__header-date">{reports[0].formattedDate}</th>
+    <TableHead>
+      <TableRow className={classes.headerRow}>
+        <TableCell component="th" className={classes.headerCell}>
+          {reports[0].formattedDate}
+        </TableCell>
         {TABLE_REPORT_CAPTIONS.map((item, index) => (
-          <th key={index}>{item.key}</th>
+          <TableCell component="th" className={classes.headerCell} key={index}>
+            {item.key}
+          </TableCell>
         ))}
-      </tr>
-    </thead>
+      </TableRow>
+    </TableHead>
   );
 };
 
