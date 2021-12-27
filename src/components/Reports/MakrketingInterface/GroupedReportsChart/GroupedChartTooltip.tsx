@@ -17,20 +17,20 @@ const useStyles = makeStyles(() => ({
   tooltipHeader: {
     borderBottom: '1px solid #fff',
     padding: '5px 0',
-    '& h2': {
-      color: '#fff',
-      paddingLeft: '5px',
-      fontSize: '24px',
-    },
+  },
+  headerTitle: {
+    color: '#fff',
+    paddingLeft: '5px',
+    fontSize: '24px',
   },
   tooltipBody: {
     padding: '5px 0',
-    '& p': {
-      color: '#fff',
-      paddingLeft: '5px',
-      fontSize: '21px',
-      fontWeight: 500,
-    },
+  },
+  tootipContent: {
+    color: '#fff',
+    paddingLeft: '5px',
+    fontSize: '21px',
+    fontWeight: 500,
   },
 }));
 
@@ -44,11 +44,11 @@ const CustomTooltip: React.FC<Props> = ({ active, payload }) => {
   return (
     <div className={classes.tooltip}>
       <div className={classes.tooltipHeader}>
-        <h2>Дата - {ReportsTableHelpers.renderDateByFormat(new Date(), ITableFormat.daily)}</h2>
+        <h2 className={classes.headerTitle}>Дата - {ReportsTableHelpers.renderDateByFormat(new Date(), ITableFormat.daily)}</h2>
       </div>
       {payload.map((i: IPayloadTooltip) => (
         <div className={classes.tooltipBody} key={i.dataKey}>
-          <p>
+          <p className={classes.tootipContent}>
             {`${i.name}:`} <span>{i.value} $</span>
           </p>
         </div>

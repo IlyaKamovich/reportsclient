@@ -29,12 +29,12 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    '& h2': {
-      paddingLeft: '85px',
-      color: ' #000',
-      fontWeight: 800,
-      fontSize: '30px',
-    },
+  },
+  headerTitle: {
+    paddingLeft: '85px',
+    color: ' #000',
+    fontWeight: 800,
+    fontSize: '30px',
   },
   select: {
     width: '290px',
@@ -48,13 +48,17 @@ const GroupedChartContainer: React.FC<Props> = ({ reports, dataKey, title, stati
   const [optionSelected, setOptionSelected] = useState<PropsValue<ISelectOption>>([]);
   const handleChangeOptionValue = (selectedOption: PropsValue<ISelectOption>) => setOptionSelected(selectedOption);
 
-  const chartData = useMemo(() => GroupedChartHelpers.getCurrentChartData(dataKey, reports, statisticsBy), [dataKey, reports, statisticsBy]);
+  const chartData = useMemo(
+    () => GroupedChartHelpers.getCurrentChartData(dataKey, reports, statisticsBy),
+    [dataKey, reports, statisticsBy]
+  );
+
   const selectOptions = useSelectOptions(reports, chartData, statisticsBy);
 
   return (
     <div className={classes.chartContainer}>
       <div className={classes.chartContainerHeader}>
-        <h2>{title}</h2>
+        <h2 className={classes.headerTitle}>{title}</h2>
         <ReactSelect
           className={classes.select}
           placeholder="Select..."
@@ -66,7 +70,14 @@ const GroupedChartContainer: React.FC<Props> = ({ reports, dataKey, title, stati
           components={{ Option: FilterOption }}
         />
       </div>
-      <GroupedChart dataKey={dataKey} chartData={chartData} optionSelected={optionSelected} trendline={false} statisticsBy={statisticsBy} reports={reports} />
+      <GroupedChart
+        dataKey={dataKey}
+        chartData={chartData}
+        optionSelected={optionSelected}
+        trendline={false}
+        statisticsBy={statisticsBy}
+        reports={reports}
+      />
     </div>
   );
 };

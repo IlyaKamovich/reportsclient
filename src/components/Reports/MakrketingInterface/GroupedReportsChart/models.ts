@@ -143,3 +143,15 @@ export interface IChartOptions {
     type: Omit<LegendType, 'none'>;
   };
 }
+
+export interface IYAxisTicksOptions {
+  ROUND_CONVERSIONS: number;
+  CONVERSIONS_STEP: number;
+  CPI_STEP: number;
+  ROUND_CPI: number;
+}
+
+export interface IYAxisWidth {
+  CONVERSIONS_CHART: number;
+  CPI_CHART: number;
+}

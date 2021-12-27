@@ -62,7 +62,12 @@ const MarketingInterface: React.FC<Props> = ({ statisticsBy }) => {
         <ReportsTable reports={reports} tableFormat={ITableFormat.growing} statisticsBy={statisticsBy} />
       </div>
       <div className={classes.wrapperBoxCharts}>
-        <GroupedChartContainer reports={reports} dataKey={MetricsKeys.CONVERSIONS} statisticsBy={statisticsBy} title="Конверсии" />
+        <GroupedChartContainer
+          reports={reports}
+          dataKey={MetricsKeys.CONVERSIONS}
+          statisticsBy={statisticsBy}
+          title="Конверсии"
+        />
         <GroupedChartContainer reports={reports} dataKey={MetricsKeys.CPI} statisticsBy={statisticsBy} title="Цпл" />
       </div>
     </div>

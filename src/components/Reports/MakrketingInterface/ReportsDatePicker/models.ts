@@ -1,4 +1,4 @@
-export interface IReportsDataPickerOptions {
+export interface IDatePickerOptions {
   popover: {
     anchorOrigin: {
       vertical: 'top' | 'center' | 'bottom' | number;

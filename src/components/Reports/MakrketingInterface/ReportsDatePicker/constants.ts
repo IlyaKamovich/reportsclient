@@ -1,6 +1,6 @@
-import { IReportsDataPickerOptions } from './models';
+import { IDatePickerOptions } from './models';
 
-export const ReportsDataPickerOptinons: IReportsDataPickerOptions = {
+export const DATE_PICKER_OPTIONS: IDatePickerOptions = {
   popover: {
     anchorOrigin: {
       vertical: 'bottom',

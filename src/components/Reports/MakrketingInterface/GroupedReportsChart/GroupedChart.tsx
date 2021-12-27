@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList, Dot } from 'recharts';
 import { IChartData, IReport, MetricsKeys, ISelectOption } from './models';
-import { ChartOptions, lineChartColors, Y_AXIS_TICKS_OPTIONS } from './constants';
+import { CHART_OPTIONS, CHART_COLORS, Y_AXIS_TICKS_OPTIONS, Y_AXIS_WIDTH } from './constants';
 import { IMarketingInterface } from '../models';
 import { GroupedChartHelpers } from './helpers';
 import { CustomTooltip } from './GroupedChartTooltip';
@@ -17,10 +17,14 @@ interface Props {
 }
 
 const GroupedChart: React.FC<Props> = ({ dataKey, optionSelected, statisticsBy, chartData, reports }) => {
-  const { responsiveContainer, lineChart, xAxisOptions, yAxisOptions, line, labelList, cartesianGrid, legend } = ChartOptions;
+  const { responsiveContainer, lineChart, xAxisOptions, yAxisOptions, line, labelList, cartesianGrid, legend } = CHART_OPTIONS;
   const [chartKeys, setChartKeys] = useState<string[]>([]);
   const [xAxisKey]: string[] = useMemo(() => Object.keys(chartData[0]), [chartData]);
   const uniqueReports = useMemo(() => GroupedChartHelpers.getUniqueReports(reports), [reports]);
+  const YAxisWidth = useMemo(
+    () => (dataKey === MetricsKeys.CONVERSIONS ? Y_AXIS_WIDTH.CONVERSIONS_CHART : Y_AXIS_WIDTH.CPI_CHART),
+    [dataKey]
+  );
 
   useEffect(() => {
     if (!optionSelected) {
@@ -46,14 +50,21 @@ const GroupedChart: React.FC<Props> = ({ dataKey, optionSelected, statisticsBy, 
       <Line
         name={GroupedChartHelpers.formatChartLabel(chartKey, dataKey, optionSelected, statisticsBy, uniqueReports)}
         isAnimationActive={line.isAnimationActive}
-        fill={lineChartColors[index]}
-        stroke={lineChartColors[index]}
+        fill={CHART_COLORS[index]}
+        stroke={CHART_COLORS[index]}
         strokeWidth={line.strokeWidth}
         dataKey={chartKey}
         key={chartKey}
-        dot={<Dot strokeWidth={line.dot.strokeWidth} fill={lineChartColors[index]} color={lineChartColors[index]} stroke={lineChartColors[index]} />}
+        dot={<Dot strokeWidth={line.dot.strokeWidth} fill={CHART_COLORS[index]} color={CHART_COLORS[index]} stroke={CHART_COLORS[index]} />}
       >
-        <LabelList dataKey={chartKey} dy={labelList.dy} fontWeight={labelList.fontWeight} fill={lineChartColors[index]} fontSize={labelList.fontSize} />;
+        <LabelList
+          dataKey={chartKey}
+          dy={labelList.dy}
+          fontWeight={labelList.fontWeight}
+          fill={CHART_COLORS[index]}
+          fontSize={labelList.fontSize}
+        />
+        ;
       </Line>
     ));
 
@@ -70,10 +81,18 @@ const GroupedChart: React.FC<Props> = ({ dataKey, optionSelected, statisticsBy, 
 
     switch (dataKey) {
       case MetricsKeys.CONVERSIONS:
-        const conversionsTicks = GroupedChartHelpers.calculateYAxisTiсks(defaultTicks, Y_AXIS_TICKS_OPTIONS.CONVERSIONS_STEP, Y_AXIS_TICKS_OPTIONS.ROUND_CONVERSIONS);
+        const conversionsTicks = GroupedChartHelpers.calculateYAxisTiсks(
+          defaultTicks,
+          Y_AXIS_TICKS_OPTIONS.CONVERSIONS_STEP,
+          Y_AXIS_TICKS_OPTIONS.ROUND_CONVERSIONS
+        );
         return conversionsTicks;
       case MetricsKeys.CPI:
-        const cplTicks = GroupedChartHelpers.calculateYAxisTiсks(defaultTicks, Y_AXIS_TICKS_OPTIONS.CPI_STEP, Y_AXIS_TICKS_OPTIONS.ROUND_CPI);
+        const cplTicks = GroupedChartHelpers.calculateYAxisTiсks(
+          defaultTicks,
+          Y_AXIS_TICKS_OPTIONS.CPI_STEP,
+          Y_AXIS_TICKS_OPTIONS.ROUND_CPI
+        );
         return cplTicks;
     }
   };
@@ -86,7 +105,7 @@ const GroupedChart: React.FC<Props> = ({ dataKey, optionSelected, statisticsBy, 
         <CartesianGrid vertical={cartesianGrid.vertical} />
         <YAxis
           domain={[(min: number) => min, (max: number) => max]}
-          width={dataKey === MetricsKeys.CONVERSIONS ? 40 : 35}
+          width={YAxisWidth}
           ticks={getYAxisTicks()}
           tickMargin={yAxisOptions.tickMargin}
           minTickGap={yAxisOptions.minTickGap}

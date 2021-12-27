@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Popover from '@material-ui/core/Popover';
 import DateFnsUtils from '@date-io/date-fns';
 import ruLocale from 'date-fns/locale/ru';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
-import { ReportsDataPickerOptinons } from './constants';
+import { DATE_PICKER_OPTIONS } from './constants';
 import { DatePickerVariables } from './models';
 import { DataPickerHelpers } from './helpers';
 
@@ -18,9 +18,9 @@ interface Props {
   onChange: (date: MaterialUiPickersDate) => void;
 }
 
-const ReportsDataPicker: React.FC<Props> = (props) => {
-  const { id, open, anchorEl, onClose, value, onChange, dateFormat } = props;
-  const { popover, datePicker } = ReportsDataPickerOptinons;
+const ReportsDatePicker: React.FC<Props> = ({ id, open, anchorEl, onClose, value, onChange, dateFormat }) => {
+  const { popover, datePicker } = DATE_PICKER_OPTIONS;
+  const datePickerViews = useMemo(() => DataPickerHelpers.renderDatePickerViews(dateFormat), []);
 
   return (
     <Popover id={id} open={open} anchorEl={anchorEl} onClose={onClose} anchorOrigin={popover.anchorOrigin}>
@@ -32,11 +32,11 @@ const ReportsDataPicker: React.FC<Props> = (props) => {
           variant={datePicker.variant}
           minDate={datePicker.minDate}
           maxDate={datePicker.maxDate}
-          views={DataPickerHelpers.renderDatePickerViews(dateFormat)}
+          views={datePickerViews}
         />
       </MuiPickersUtilsProvider>
     </Popover>
   );
 };
 
-export { ReportsDataPicker };
+export { ReportsDatePicker };

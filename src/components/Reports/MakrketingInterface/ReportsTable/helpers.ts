@@ -4,15 +4,23 @@ import { IMarketingInterface } from '../models';
 import moment from 'moment';
 
 class ReportsTableHelpers {
-  static calculateSumOfMeticsByTableFormat = (reports: IReport[], tableFormat: ITableFormat, statisticsBy: IMarketingInterface) => {
+  static calculateSumOfMeticsByTableFormat = (
+    reports: IReport[],
+    tableFormat: ITableFormat,
+    statisticsBy: IMarketingInterface
+  ) => {
     const currentReportsByTableFormat = this.getCurrentReportsByTableFormat(reports, tableFormat);
 
-    const calculatedConversions = this.getSumOfMeticByMetricAndMarketingKey(currentReportsByTableFormat, MetricsKeys.CONVERSIONS, statisticsBy);
+    const calculatedConversions = this.getSumOfMeticByMetricAndMarketingKey(
+      currentReportsByTableFormat,
+      MetricsKeys.CONVERSIONS,
+      statisticsBy
+    );
     const calculatedCpl = this.getSumOfMeticByMetricAndMarketingKey(currentReportsByTableFormat, MetricsKeys.CPI, statisticsBy);
 
     const uniqueReportsByTargetologs = [...new Map(reports.map((report: IReport) => [report.targetologId, report])).values()];
 
-    const mappedCalculatedMeticsByTableFormat = this.getMappedCalculatedMeticsByTableFormat(
+    const mappedCalculatedMeticsByTableFormat = this.getMappedCalculatedMetricsByTableFormat(
       calculatedConversions,
       calculatedCpl,
       tableFormat,
@@ -25,7 +33,7 @@ class ReportsTableHelpers {
 
   static getCurrentReportsByTableFormat = (reports: IReport[], tableFormat: ITableFormat): IReport[] => {
     if (tableFormat === ITableFormat.daily) {
-      const today = moment(new Date()).format('DD');
+      const today = moment().format('DD');
       const reportsToday = reports.filter((report: IReport) => report.formattedDate === today);
       return reportsToday;
     }
@@ -33,7 +41,11 @@ class ReportsTableHelpers {
     return reports;
   };
 
-  static getSumOfMeticByMetricAndMarketingKey = (reports: IReport[], metricKey: MetricsKeys, statisticsBy: IMarketingInterface): ICalculatedReportMetricsByKey => {
+  static getSumOfMeticByMetricAndMarketingKey = (
+    reports: IReport[],
+    metricKey: MetricsKeys,
+    statisticsBy: IMarketingInterface
+  ): ICalculatedReportMetricsByKey => {
     const calculatedMetics = reports.reduce((acc: ICalculatedReportMetricsByKey, current: IReport) => {
       const key = current[statisticsBy];
       const nodeValue = acc[key];
@@ -48,7 +60,7 @@ class ReportsTableHelpers {
     return calculatedMetics;
   };
 
-  static getMappedCalculatedMeticsByTableFormat = (
+  static getMappedCalculatedMetricsByTableFormat = (
     conversios: ICalculatedReportMetricsByKey,
     cpls: ICalculatedReportMetricsByKey,
     tableFormat: ITableFormat,
@@ -63,7 +75,9 @@ class ReportsTableHelpers {
       const cplValue = tableFormat === ITableFormat.daily ? parseFloat(cpl.toFixed(1)) : parseFloat((cpl / monthDays).toFixed(1));
 
       const keyName = statisticsBy === IMarketingInterface.bySources ? 'source' : 'targetologId';
-      const targetologName = uniqueReportsByTargetologs.find((report: IReport) => report.targetologId === propKey)?.targetologName;
+      const targetologName = uniqueReportsByTargetologs.find(
+        (report: IReport) => report.targetologId === propKey
+      )?.targetologName;
 
       return {
         [keyName]: propKey,
@@ -77,12 +91,16 @@ class ReportsTableHelpers {
   };
 
   static getSumOfConversions = (mixedReports: IMixedReportsResultByPediod[]): number => {
-    const conversionsByMonts = mixedReports.reduce((acc: number, current: IMixedReportsResultByPediod) => acc + current.conversions, 0);
+    const conversionsByMonts = mixedReports.reduce(
+      (acc: number, current: IMixedReportsResultByPediod) => acc + current.conversions,
+      0
+    );
     return conversionsByMonts;
   };
 
   static getAvgCpl = (mixedReports: IMixedReportsResultByPediod[]): number => {
-    const avgCpl = mixedReports.reduce((acc: number, current: IMixedReportsResultByPediod) => acc + current.cpi, 0) / mixedReports.length;
+    const avgCpl =
+      mixedReports.reduce((acc: number, current: IMixedReportsResultByPediod) => acc + current.cpi, 0) / mixedReports.length;
     return parseFloat(avgCpl.toFixed(2));
   };
 

@@ -63,12 +63,14 @@ const ReportsTable: React.FC<Props> = ({ reports, tableFormat, statisticsBy }) =
     return { sumOfMetricsByTableFormat, sumOfConversions, avgCpl };
   }, [reports]);
 
+  const tableDate = useMemo(() => ReportsTableHelpers.renderDateByFormat(new Date(), tableFormat), [tableFormat]);
+
   return (
     <div className={classes.wrappeBoxTableContainer}>
       <Table className={classes.reports}>
         <TableHead>
           <TableRow className={classes.reportsRow}>
-            <TableCell className={classes.reportsCell}>{ReportsTableHelpers.renderDateByFormat(new Date(), tableFormat)}</TableCell>
+            <TableCell className={classes.reportsCell}>{tableDate}</TableCell>
             <TableCell className={classes.reportsCell}>Заявки</TableCell>
             <TableCell className={classes.reportsCell}>Цпл</TableCell>
           </TableRow>

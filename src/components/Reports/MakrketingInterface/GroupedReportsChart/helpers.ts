@@ -1,5 +1,14 @@
 import { IMarketingInterface } from '../models';
-import { MetricsKeys, IReport, ISumReport, IReportsByKey, IReportsWithTrendline, IGroupedReportsByDateAndDataKey, IChartData, ISelectOption } from './models';
+import {
+  MetricsKeys,
+  IReport,
+  ISumReport,
+  IReportsByKey,
+  IReportsWithTrendline,
+  IGroupedReportsByDateAndDataKey,
+  IChartData,
+  ISelectOption,
+} from './models';
 import { calculateTrendline } from './trendline';
 import { PropsValue } from 'react-select';
 import _range from 'lodash/range';
@@ -20,7 +29,7 @@ class GroupedChartHelpers {
   };
 
   static getSumOfMetricsByDataKey = (dataKey: MetricsKeys, reports: IReport[], statisticsBy: IMarketingInterface): ISumReport[] => {
-    const result = reports.reduce((acc: ISumReport[], current: IReport) => {
+    const sumOfMetricsByKey = reports.reduce((acc: ISumReport[], current: IReport) => {
       const data = acc.find((i: ISumReport) => i.formattedDate === current.formattedDate);
 
       if (!data) {
@@ -33,21 +42,24 @@ class GroupedChartHelpers {
       ];
     }, []);
 
-    //For the CPL, we have to return the mean
-    if (dataKey === MetricsKeys.CPI) {
-      const countOfTargetologs = [...new Set(reports.map((report: IReport) => report[statisticsBy]))].length;
-
-      const resultOfCLP = result.map((report: ISumReport) => {
-        return { ...report, sumOfMetric: parseFloat((report.sumOfMetric / countOfTargetologs).toFixed(2)) };
-      });
-
-      return resultOfCLP;
+    if (dataKey !== MetricsKeys.CPI) {
+      return sumOfMetricsByKey;
     }
 
-    return result;
+    const countOfReportsByStatisticsKey = [...new Set(reports.map((report: IReport) => report[statisticsBy]))].length;
+
+    const avgSumOfCpl = sumOfMetricsByKey.map((report: ISumReport) => {
+      return { ...report, sumOfMetric: parseFloat((report.sumOfMetric / countOfReportsByStatisticsKey).toFixed(2)) };
+    });
+
+    return avgSumOfCpl;
   };
 
-  static getGroupedReportsByDataAndStatisticKey = (reports: IReport[], dataKey: MetricsKeys, statisticsBy: IMarketingInterface): IGroupedReportsByDateAndDataKey[] => {
+  static getGroupedReportsByDataAndStatisticKey = (
+    reports: IReport[],
+    dataKey: MetricsKeys,
+    statisticsBy: IMarketingInterface
+  ): IGroupedReportsByDateAndDataKey[] => {
     const groupedArray = reports.reduce((acc: IGroupedReportsByDateAndDataKey[], current: IReport) => {
       const nodeReport = acc.find((i) => i.formattedDate === current.formattedDate);
       const key = current[statisticsBy];
@@ -71,11 +83,6 @@ class GroupedChartHelpers {
 
     const reportWithTrendline = reportsByKey.map((item, index) => ({ ...item, trendline: trendlineData[index] }));
     return reportWithTrendline;
-  };
-
-  static sortGroupedReportsByDate = (groupedReports: IGroupedReportsByDateAndDataKey[]): IGroupedReportsByDateAndDataKey[] => {
-    const sortedReports = groupedReports.sort((a, b) => (a.formattedDate > b.formattedDate ? -1 : 1));
-    return sortedReports;
   };
 
   static getDefaultTicks = (chartData: IChartData[], selectedOptionsLength: number): number[] => {

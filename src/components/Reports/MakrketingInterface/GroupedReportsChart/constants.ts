@@ -1,9 +1,9 @@
-import { IChartOptions } from './models';
+import { IChartOptions, IYAxisTicksOptions, IYAxisWidth } from './models';
 
 //A special color for the graph line - this is necessary so that all elements of a single line have 1 color
-export const lineChartColors: string[] = ['#341f97', '#ee5253', '#01a3a4', '#222f3e', '#b71540'];
+export const CHART_COLORS: string[] = ['#341f97', '#ee5253', '#01a3a4', '#222f3e', '#b71540'];
 
-export const ChartOptions: IChartOptions = {
+export const CHART_OPTIONS: IChartOptions = {
   responsiveContainer: {
     width: '100%',
     height: '100%',
@@ -49,9 +49,14 @@ export const ChartOptions: IChartOptions = {
   },
 };
 
-export const Y_AXIS_TICKS_OPTIONS = {
+export const Y_AXIS_TICKS_OPTIONS: IYAxisTicksOptions = {
   ROUND_CONVERSIONS: 100,
   CONVERSIONS_STEP: 100,
   CPI_STEP: 0.2,
   ROUND_CPI: 1,
+};
+
+export const Y_AXIS_WIDTH: IYAxisWidth = {
+  CONVERSIONS_CHART: 40,
+  CPI_CHART: 35,
 };
