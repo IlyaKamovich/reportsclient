@@ -1,15 +1,15 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import spinner from '../../../assets/spinner.svg';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles({
   loading: {
     minHeight: '100vh',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
-}));
+});
 
 const Spinner: React.FC = () => {
   const classes = useStyles();

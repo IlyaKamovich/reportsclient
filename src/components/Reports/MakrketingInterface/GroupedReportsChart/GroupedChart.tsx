@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList, Dot } from 'recharts';
-import { IChartData, IReport, MetricsKeys, ISelectOption } from './models';
+import { IChartData, IReport, MetricsKeys } from './models';
 import { CHART_OPTIONS, CHART_COLORS, Y_AXIS_TICKS_OPTIONS, Y_AXIS_WIDTH } from './constants';
 import { IMarketingInterface } from '../models';
 import { GroupedChartHelpers } from './helpers';
 import { CustomTooltip } from './GroupedChartTooltip';
-import { PropsValue } from 'react-select';
 
 interface Props {
-  optionSelected: PropsValue<ISelectOption>;
+  selectedOptions: string[];
   trendline?: boolean;
   statisticsBy: IMarketingInterface;
   chartData: IChartData[];
@@ -16,7 +15,7 @@ interface Props {
   reports: IReport[];
 }
 
-const GroupedChart: React.FC<Props> = ({ dataKey, optionSelected, statisticsBy, chartData, reports }) => {
+const GroupedChart: React.FC<Props> = ({ dataKey, selectedOptions, statisticsBy, chartData, reports }) => {
   const { responsiveContainer, lineChart, xAxisOptions, yAxisOptions, line, labelList, cartesianGrid, legend } = CHART_OPTIONS;
   const [chartKeys, setChartKeys] = useState<string[]>([]);
   const [xAxisKey]: string[] = useMemo(() => Object.keys(chartData[0]), [chartData]);
@@ -27,15 +26,10 @@ const GroupedChart: React.FC<Props> = ({ dataKey, optionSelected, statisticsBy, 
   );
 
   useEffect(() => {
-    if (!optionSelected) {
-      return;
-    }
+    const SELECTED_OPTIONS_LENGTH = selectedOptions.length;
 
-    const SELECTED_OPTIONS_LENGTH = Object.keys(optionSelected).length;
-
-    if (SELECTED_OPTIONS_LENGTH !== 0 && Array.isArray(optionSelected)) {
-      const chartLineKeys = optionSelected.map((i: ISelectOption) => i.value);
-      setChartKeys(chartLineKeys);
+    if (SELECTED_OPTIONS_LENGTH !== 0) {
+      setChartKeys(selectedOptions);
     }
 
     if (SELECTED_OPTIONS_LENGTH === 0) {
@@ -43,12 +37,12 @@ const GroupedChart: React.FC<Props> = ({ dataKey, optionSelected, statisticsBy, 
       const chartLineKeys = Object.keys(dataSet).filter((e) => e === 'sumOfMetric');
       setChartKeys(chartLineKeys);
     }
-  }, [optionSelected]);
+  }, [selectedOptions]);
 
   const drawChartLines = () => {
     const chartLines = chartKeys.map((chartKey: string, index: number) => (
       <Line
-        name={GroupedChartHelpers.formatChartLabel(chartKey, dataKey, optionSelected, statisticsBy, uniqueReports)}
+        name={GroupedChartHelpers.formatChartLabel(chartKey, dataKey, selectedOptions, statisticsBy, uniqueReports)}
         isAnimationActive={line.isAnimationActive}
         fill={CHART_COLORS[index]}
         stroke={CHART_COLORS[index]}
@@ -72,11 +66,7 @@ const GroupedChart: React.FC<Props> = ({ dataKey, optionSelected, statisticsBy, 
   };
 
   const getYAxisTicks = (): number[] => {
-    if (!optionSelected) {
-      return [];
-    }
-
-    const SELECTED_OPTIONS_LENGTH = Object.keys(optionSelected).length;
+    const SELECTED_OPTIONS_LENGTH = selectedOptions.length;
     const defaultTicks = GroupedChartHelpers.getDefaultTicks(chartData, SELECTED_OPTIONS_LENGTH);
 
     switch (dataKey) {

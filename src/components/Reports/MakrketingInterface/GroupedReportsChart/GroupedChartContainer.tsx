@@ -1,12 +1,15 @@
-import React, { useMemo, useState } from 'react';
-import { IReport, MetricsKeys, ISelectOption } from './models';
-import ReactSelect, { PropsValue } from 'react-select';
-import { useSelectOptions } from './useSelectOptions';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useMemo } from 'react';
+import { IReport, MetricsKeys } from './models';
+import { makeStyles } from '@mui/styles';
 import { IMarketingInterface } from '../models';
 import { GroupedChartHelpers } from './helpers';
 import GroupedChart from './GroupedChart';
-import FilterOption from './FilterOption';
+import Checkbox from '@mui/material/Checkbox';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { useSelectOptions } from './useSelectOptions';
 
 interface Props {
   reports: IReport[];
@@ -15,7 +18,7 @@ interface Props {
   statisticsBy: IMarketingInterface;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles({
   chartContainer: {
     height: '49.9%',
     width: '100%',
@@ -37,43 +40,59 @@ const useStyles = makeStyles(() => ({
     fontSize: '30px',
   },
   select: {
-    width: '290px',
-    paddingRight: '25px',
+    width: '350px',
+    paddingTop: '35px',
+    paddingRight: '45px',
+    opacity: '0.4',
+    '&:hover': {
+      opacity: '1',
+    },
   },
-}));
+});
 
 const GroupedChartContainer: React.FC<Props> = ({ reports, dataKey, title, statisticsBy }) => {
   const classes = useStyles();
 
-  const [optionSelected, setOptionSelected] = useState<PropsValue<ISelectOption>>([]);
-  const handleChangeOptionValue = (selectedOption: PropsValue<ISelectOption>) => setOptionSelected(selectedOption);
+  const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
 
   const chartData = useMemo(
     () => GroupedChartHelpers.getCurrentChartData(dataKey, reports, statisticsBy),
     [dataKey, reports, statisticsBy]
   );
 
-  const selectOptions = useSelectOptions(reports, chartData, statisticsBy);
+  const defaultSelectOptions: string[] = useSelectOptions(chartData);
 
   return (
     <div className={classes.chartContainer}>
       <div className={classes.chartContainerHeader}>
         <h2 className={classes.headerTitle}>{title}</h2>
-        <ReactSelect
+        <Autocomplete
+          disableCloseOnSelect
+          disableListWrap={true}
+          value={selectedOptions}
+          onChange={(__: React.SyntheticEvent<Element, Event>, value: string[]) => setSelectedOptions(value)}
           className={classes.select}
-          placeholder="Select..."
-          options={selectOptions}
-          isMulti={true}
-          closeMenuOnSelect={true}
-          onChange={handleChangeOptionValue}
-          value={optionSelected}
-          components={{ Option: FilterOption }}
+          multiple
+          autoHighlight
+          options={defaultSelectOptions}
+          getOptionLabel={(option: string) => GroupedChartHelpers.formatSelectOption(option, reports)}
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                checkedIcon={<CheckBoxIcon fontSize="small" />}
+                checked={selected}
+              />
+              {GroupedChartHelpers.formatSelectOption(option, reports)}
+            </li>
+          )}
+          renderInput={(params) => <TextField {...params} label="Select chart keys" />}
         />
       </div>
       <GroupedChart
         dataKey={dataKey}
         chartData={chartData}
-        optionSelected={optionSelected}
+        selectedOptions={selectedOptions}
         trendline={false}
         statisticsBy={statisticsBy}
         reports={reports}

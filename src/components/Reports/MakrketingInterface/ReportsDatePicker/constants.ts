@@ -10,7 +10,7 @@ export const DATE_PICKER_OPTIONS: IDatePickerOptions = {
   datePicker: {
     orientation: 'landscape',
     variant: 'static',
-    minDate: '2019-03-01',
+    minDate: new Date('2019-03-01'),
     maxDate: new Date(),
   },
 };

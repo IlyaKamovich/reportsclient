@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
-import Popover from '@material-ui/core/Popover';
-import DateFnsUtils from '@date-io/date-fns';
-import ruLocale from 'date-fns/locale/ru';
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import Popover from '@mui/material/Popover';
 import { DATE_PICKER_OPTIONS } from './constants';
 import { DatePickerVariables } from './models';
-import { DataPickerHelpers } from './helpers';
+import { DatePickerHelpers } from './helpers';
+import TextField from '@mui/material/TextField';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePicker from '@mui/lab/DatePicker';
 
 interface Props {
   id: string;
@@ -15,26 +15,25 @@ interface Props {
   dateFormat: DatePickerVariables;
   anchorEl: HTMLButtonElement | null;
   onClose: () => void;
-  onChange: (date: MaterialUiPickersDate) => void;
+  onChange: (date: Date | null) => void;
 }
 
 const ReportsDatePicker: React.FC<Props> = ({ id, open, anchorEl, onClose, value, onChange, dateFormat }) => {
   const { popover, datePicker } = DATE_PICKER_OPTIONS;
-  const datePickerViews = useMemo(() => DataPickerHelpers.renderDatePickerViews(dateFormat), []);
+  const datePickerViews = useMemo(() => DatePickerHelpers.renderDatePickerViews(dateFormat), []);
 
   return (
     <Popover id={id} open={open} anchorEl={anchorEl} onClose={onClose} anchorOrigin={popover.anchorOrigin}>
-      <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DatePicker
-          value={value}
-          onChange={onChange}
-          orientation={datePicker.orientation}
-          variant={datePicker.variant}
+          views={datePickerViews}
           minDate={datePicker.minDate}
           maxDate={datePicker.maxDate}
-          views={datePickerViews}
+          value={value}
+          onChange={onChange}
+          renderInput={(params: any) => <TextField {...params} helperText={null} />}
         />
-      </MuiPickersUtilsProvider>
+      </LocalizationProvider>
     </Popover>
   );
 };

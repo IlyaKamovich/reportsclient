@@ -1,14 +1,14 @@
 import React from 'react';
 import { ReportsTableHelpers } from '../ReportsTable/helpers';
 import { IPayloadTooltip, ITableFormat } from './models';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 
 interface Props {
   active?: boolean;
   payload?: IPayloadTooltip[];
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles({
   tooltip: {
     backgroundColor: '#182c61',
     borderRadius: '5px',
@@ -32,7 +32,7 @@ const useStyles = makeStyles(() => ({
     fontSize: '21px',
     fontWeight: 500,
   },
-}));
+});
 
 const CustomTooltip: React.FC<Props> = ({ active, payload }) => {
   const classes = useStyles();

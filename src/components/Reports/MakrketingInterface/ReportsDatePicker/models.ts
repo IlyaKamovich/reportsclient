@@ -8,12 +8,12 @@ export interface IDatePickerOptions {
   datePicker: {
     orientation: 'portrait' | 'landscape';
     variant: 'dialog' | 'inline' | 'static';
-    minDate: string;
+    minDate: Date;
     maxDate: Date;
   };
 }
 
-export type IDatePickerViews = 'year' | 'date' | 'month';
+export declare type DatePickerView = 'year' | 'day' | 'month';
 
 export enum DatePickerVariables {
   byDay = 'byDay',

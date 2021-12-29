@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react';
-import { ReportsTableHelpers } from './helpers';
-import { IReport, ITableFormat } from 'components/Reports/MakrketingInterface/GroupedReportsChart/models';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableFooter from '@mui/material/TableFooter';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import { makeStyles } from '@mui/styles';
+import { IReport, ITableFormat } from '../GroupedReportsChart/models';
 import { IMarketingInterface } from '../models';
+import { ReportsTableHelpers } from './helpers';
 import { IMixedReportsResultByPediod } from './models';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableBody from '@material-ui/core/TableBody';
-import TableFooter from '@material-ui/core/TableFooter';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import { makeStyles } from '@material-ui/core/styles';
 
 interface Props {
   reports: IReport[];
@@ -17,29 +17,28 @@ interface Props {
   statisticsBy: IMarketingInterface;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles({
   reports: {
     borderCollapse: 'collapse',
     width: '100%',
-    height: '100%',
-    margin: 'auto',
+    height: '100% ',
+    margin: 'auto ',
   },
   reportsRow: {
     backgroundColor: '#182c61',
   },
   reportsCell: {
-    fontFamily: "'Montserrat', sans-serif",
-    paddingTop: '12px',
-    paddingBottom: '12px',
-    textAlign: 'left',
-    color: 'white',
-    fontSize: '1.7rem',
-    fontWeight: 600,
-    border: '2px solid #ddd',
-    padding: '15px',
-    width: '30%',
+    color: 'white !important',
+    fontFamily: "'Montserrat', sans-serif !important",
+    paddingTop: '12px !important',
+    paddingBottom: '12px !important',
+    fontSize: '1.7rem !important',
+    fontWeight: '600 !important',
+    border: '2px solid #ddd !important',
+    padding: '15px !important',
+    width: '30% !important',
     '&:first-child': {
-      width: '40%',
+      width: '40% !important',
     },
   },
   reportsBodyRow: {
@@ -49,7 +48,7 @@ const useStyles = makeStyles(() => ({
     height: '50%',
     width: '100%',
   },
-}));
+});
 
 const ReportsTable: React.FC<Props> = ({ reports, tableFormat, statisticsBy }) => {
   const classes = useStyles();

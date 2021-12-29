@@ -7,10 +7,8 @@ import {
   IReportsWithTrendline,
   IGroupedReportsByDateAndDataKey,
   IChartData,
-  ISelectOption,
 } from './models';
 import { calculateTrendline } from './trendline';
-import { PropsValue } from 'react-select';
 import _range from 'lodash/range';
 
 class GroupedChartHelpers {
@@ -108,22 +106,23 @@ class GroupedChartHelpers {
 
   static getUniqueReports = (reports: IReport[]) => [...new Map(reports.map((report: IReport) => [report.targetologId, report])).values()];
 
+  static formatSelectOption = (defailtOption: string, reports: IReport[]): string => {
+    const uniqueReports = this.getUniqueReports(reports);
+    return uniqueReports.find((report) => report.targetologId === defailtOption)?.targetologName || defailtOption;
+  };
+
   static formatChartLabel = (
     chartKey: string,
     dataKey: MetricsKeys,
-    optionSelected: PropsValue<ISelectOption>,
+    seletedOptions: string[],
     statisticsBy: IMarketingInterface,
     uniqueReports: IReport[]
   ): string => {
-    if (!optionSelected) {
-      return chartKey;
-    }
-
-    if (dataKey === MetricsKeys.CPI && Object.keys(optionSelected).length === 0) {
+    if (dataKey === MetricsKeys.CPI && seletedOptions.length === 0) {
       return 'Средний цпл';
     }
 
-    if (dataKey === MetricsKeys.CONVERSIONS && Object.keys(optionSelected).length === 0) {
+    if (dataKey === MetricsKeys.CONVERSIONS && seletedOptions.length === 0) {
       return 'Количество заявок';
     }
 

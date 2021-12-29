@@ -1,14 +1,13 @@
-import { DatePickerVariables, IDatePickerViews } from './models';
-
-class DataPickerHelpers {
-  static renderDatePickerViews = (dateFormat: DatePickerVariables): IDatePickerViews[] => {
+import { DatePickerVariables, DatePickerView } from './models';
+class DatePickerHelpers {
+  static renderDatePickerViews = (dateFormat: DatePickerVariables): DatePickerView[] => {
     switch (dateFormat) {
       case DatePickerVariables.byDay:
-        return ['year', 'month', 'date'];
+        return ['year', 'month', 'day'];
       case DatePickerVariables.byMonth:
         return ['year', 'month'];
     }
   };
 }
 
-export { DataPickerHelpers };
+export { DatePickerHelpers };

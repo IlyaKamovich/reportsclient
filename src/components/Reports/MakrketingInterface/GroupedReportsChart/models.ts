@@ -14,11 +14,6 @@ export interface IReport {
   };
 }
 
-export interface ISelectOption {
-  value: string;
-  label?: string;
-}
-
 export interface IReports {
   reports: IReport[];
 }
