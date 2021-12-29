@@ -106,23 +106,23 @@ class GroupedChartHelpers {
 
   static getUniqueReports = (reports: IReport[]) => [...new Map(reports.map((report: IReport) => [report.targetologId, report])).values()];
 
-  static formatSelectOption = (defailtOption: string, reports: IReport[]): string => {
+  static formatSelectOption = (defaultOption: string, reports: IReport[]): string => {
     const uniqueReports = this.getUniqueReports(reports);
-    return uniqueReports.find((report) => report.targetologId === defailtOption)?.targetologName || defailtOption;
+    return uniqueReports.find((report) => report.targetologId === defaultOption)?.targetologName || defaultOption;
   };
 
   static formatChartLabel = (
     chartKey: string,
     dataKey: MetricsKeys,
-    seletedOptions: string[],
+    selectedOptions: string[],
     statisticsBy: IMarketingInterface,
     uniqueReports: IReport[]
   ): string => {
-    if (dataKey === MetricsKeys.CPI && seletedOptions.length === 0) {
+    if (dataKey === MetricsKeys.CPI && selectedOptions.length === 0) {
       return 'Средний цпл';
     }
 
-    if (dataKey === MetricsKeys.CONVERSIONS && seletedOptions.length === 0) {
+    if (dataKey === MetricsKeys.CONVERSIONS && selectedOptions.length === 0) {
       return 'Количество заявок';
     }
 

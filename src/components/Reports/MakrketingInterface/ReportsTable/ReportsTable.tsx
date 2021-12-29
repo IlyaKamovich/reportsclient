@@ -9,7 +9,7 @@ import { makeStyles } from '@mui/styles';
 import { IReport, ITableFormat } from '../GroupedReportsChart/models';
 import { IMarketingInterface } from '../models';
 import { ReportsTableHelpers } from './helpers';
-import { IMixedReportsResultByPediod } from './models';
+import { ICalculatedMetricsBySources, IСalculatedMetricsTargetologsId } from './models';
 
 interface Props {
   reports: IReport[];
@@ -75,12 +75,15 @@ const ReportsTable: React.FC<Props> = ({ reports, tableFormat, statisticsBy }) =
           </TableRow>
         </TableHead>
         <TableBody>
-          {calculatedReports.sumOfMetricsByTableFormat.map((report: IMixedReportsResultByPediod) => {
-            const rowProp = statisticsBy === IMarketingInterface.bySources ? report.source : report.targetologName;
+          {calculatedReports.sumOfMetricsByTableFormat.map((report: ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId) => {
+            const keyName =
+              statisticsBy === IMarketingInterface.bySources
+                ? (report as ICalculatedMetricsBySources).source
+                : (report as IСalculatedMetricsTargetologsId).targetologName;
             return (
-              <TableRow className={classes.reportsBodyRow} key={rowProp}>
+              <TableRow className={classes.reportsBodyRow} key={keyName}>
                 <TableCell className={classes.reportsCell} component="td">
-                  {rowProp}
+                  {keyName}
                 </TableCell>
                 <TableCell className={classes.reportsCell} component="td">
                   {report.conversions}

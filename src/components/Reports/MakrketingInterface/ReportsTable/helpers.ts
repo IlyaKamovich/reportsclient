@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { IReport, ITableFormat, MetricsKeys } from '../GroupedReportsChart/models';
 import { IMarketingInterface } from '../models';
-import { ICalculatedReportMetricsByKey, IMixedReportsResultByPediod } from './models';
+import { ICalculatedMetricsBySources, IСalculatedMetricsTargetologsId, ICalculatedReportMetricsByKey } from './models';
 
 class ReportsTableHelpers {
   static calculateSumOfMeticsByTableFormat = (reports: IReport[], tableFormat: ITableFormat, statisticsBy: IMarketingInterface) => {
@@ -16,7 +16,7 @@ class ReportsTableHelpers {
 
     const uniqueReportsByTargetologs = [...new Map(reports.map((report: IReport) => [report.targetologId, report])).values()];
 
-    const mappedCalculatedMeticsByTableFormat = this.getMappedCalculatedMetricsByTableFormat(
+    const calculatedMetics = this.getCalculatedMetrics(
       calculatedConversions,
       calculatedCpl,
       tableFormat,
@@ -24,7 +24,7 @@ class ReportsTableHelpers {
       uniqueReportsByTargetologs
     );
 
-    return mappedCalculatedMeticsByTableFormat;
+    return calculatedMetics;
   };
 
   static getCurrentReportsByTableFormat = (reports: IReport[], tableFormat: ITableFormat): IReport[] => {
@@ -42,7 +42,7 @@ class ReportsTableHelpers {
     metricKey: MetricsKeys,
     statisticsBy: IMarketingInterface
   ): ICalculatedReportMetricsByKey => {
-    const calculatedMetics = reports.reduce((acc: ICalculatedReportMetricsByKey, current: IReport) => {
+    const sumOfMetrics = reports.reduce((acc: ICalculatedReportMetricsByKey, current: IReport) => {
       const key = current[statisticsBy];
       const nodeValue = acc[key];
 
@@ -53,11 +53,11 @@ class ReportsTableHelpers {
       return { ...acc, [key]: current.metrics[metricKey] + nodeValue };
     }, {});
 
-    return calculatedMetics;
+    return sumOfMetrics;
   };
 
-  static getMappedCalculatedMetricsByTableFormat = (
-    conversios: ICalculatedReportMetricsByKey,
+  static getCalculatedMetrics = (
+    conversions: ICalculatedReportMetricsByKey,
     cpls: ICalculatedReportMetricsByKey,
     tableFormat: ITableFormat,
     statisticsBy: IMarketingInterface,
@@ -65,32 +65,43 @@ class ReportsTableHelpers {
   ) => {
     const monthDays: number = moment().daysInMonth();
 
-    const reportsPerDayBySourse: IMixedReportsResultByPediod[] = Object.keys(conversios).map((propKey) => {
-      const conversionValue = conversios[propKey];
+    const calculatedMetrics: (ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId)[] = Object.keys(conversions).map((propKey) => {
+      const conversionValue = conversions[propKey];
       const cpl = cpls[propKey];
       const cplValue = tableFormat === ITableFormat.daily ? parseFloat(cpl.toFixed(1)) : parseFloat((cpl / monthDays).toFixed(1));
+      const targetologName = uniqueReportsByTargetologs.find((report: IReport) => report.targetologId === propKey)?.targetologName || '';
 
-      const keyName = statisticsBy === IMarketingInterface.bySources ? 'source' : 'targetologId';
-      const targetologName = uniqueReportsByTargetologs.find((report: IReport) => report.targetologId === propKey)?.targetologName;
+      if (statisticsBy === IMarketingInterface.bySources) {
+        return {
+          source: propKey,
+          conversions: conversionValue,
+          cpi: cplValue,
+        };
+      }
 
       return {
-        [keyName]: propKey,
-        targetologName: targetologName || '',
+        targetologId: propKey,
+        targetologName: targetologName,
         conversions: conversionValue,
         cpi: cplValue,
       };
     });
 
-    return reportsPerDayBySourse;
+    return calculatedMetrics;
   };
 
-  static getSumOfConversions = (mixedReports: IMixedReportsResultByPediod[]): number => {
-    const conversionsByMonts = mixedReports.reduce((acc: number, current: IMixedReportsResultByPediod) => acc + current.conversions, 0);
-    return conversionsByMonts;
+  static getSumOfConversions = (mixedReports: (ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId)[]): number => {
+    const conversionsByMonth = mixedReports.reduce(
+      (acc: number, curr: ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId) => acc + curr.conversions,
+      0
+    );
+    return conversionsByMonth;
   };
 
-  static getAvgCpl = (mixedReports: IMixedReportsResultByPediod[]): number => {
-    const avgCpl = mixedReports.reduce((acc: number, current: IMixedReportsResultByPediod) => acc + current.cpi, 0) / mixedReports.length;
+  static getAvgCpl = (mixedReports: (ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId)[]): number => {
+    const avgCpl =
+      mixedReports.reduce((acc: number, current: ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId) => acc + current.cpi, 0) /
+      mixedReports.length;
     return parseFloat(avgCpl.toFixed(2));
   };
 

@@ -5,6 +5,7 @@ import { CHART_OPTIONS, CHART_COLORS, Y_AXIS_TICKS_OPTIONS, Y_AXIS_WIDTH } from 
 import { IMarketingInterface } from '../models';
 import { GroupedChartHelpers } from './helpers';
 import { CustomTooltip } from './GroupedChartTooltip';
+import { AxisDomain, AxisDomainItem } from 'recharts/types/util/types';
 
 interface Props {
   selectedOptions: string[];
@@ -25,18 +26,39 @@ const GroupedChart: React.FC<Props> = ({ dataKey, selectedOptions, statisticsBy,
     [dataKey]
   );
 
+  const yAxisTicks = useMemo(() => {
+    const SELECTED_OPTIONS_LENGTH = selectedOptions.length;
+    const defaultTicks = GroupedChartHelpers.getDefaultTicks(chartData, SELECTED_OPTIONS_LENGTH);
+
+    switch (dataKey) {
+      case MetricsKeys.CONVERSIONS:
+        const conversionsTicks = GroupedChartHelpers.calculateYAxisTiсks(
+          defaultTicks,
+          Y_AXIS_TICKS_OPTIONS.CONVERSIONS_STEP,
+          Y_AXIS_TICKS_OPTIONS.ROUND_CONVERSIONS
+        );
+        return conversionsTicks;
+      case MetricsKeys.CPI:
+        const cplTicks = GroupedChartHelpers.calculateYAxisTiсks(
+          defaultTicks,
+          Y_AXIS_TICKS_OPTIONS.CPI_STEP,
+          Y_AXIS_TICKS_OPTIONS.ROUND_CPI
+        );
+        return cplTicks;
+    }
+  }, [selectedOptions]);
+
   useEffect(() => {
     const SELECTED_OPTIONS_LENGTH = selectedOptions.length;
 
     if (SELECTED_OPTIONS_LENGTH !== 0) {
       setChartKeys(selectedOptions);
+      return;
     }
 
-    if (SELECTED_OPTIONS_LENGTH === 0) {
-      const dataSet = chartData[chartData.length - 1];
-      const chartLineKeys = Object.keys(dataSet).filter((e) => e === 'sumOfMetric');
-      setChartKeys(chartLineKeys);
-    }
+    const dataSet = chartData[chartData.length - 1];
+    const chartLineKeys = Object.keys(dataSet).filter((e) => e === 'sumOfMetric');
+    setChartKeys(chartLineKeys);
   }, [selectedOptions]);
 
   const drawChartLines = () => {
@@ -65,28 +87,6 @@ const GroupedChart: React.FC<Props> = ({ dataKey, selectedOptions, statisticsBy,
     return chartLines;
   };
 
-  const getYAxisTicks = (): number[] => {
-    const SELECTED_OPTIONS_LENGTH = selectedOptions.length;
-    const defaultTicks = GroupedChartHelpers.getDefaultTicks(chartData, SELECTED_OPTIONS_LENGTH);
-
-    switch (dataKey) {
-      case MetricsKeys.CONVERSIONS:
-        const conversionsTicks = GroupedChartHelpers.calculateYAxisTiсks(
-          defaultTicks,
-          Y_AXIS_TICKS_OPTIONS.CONVERSIONS_STEP,
-          Y_AXIS_TICKS_OPTIONS.ROUND_CONVERSIONS
-        );
-        return conversionsTicks;
-      case MetricsKeys.CPI:
-        const cplTicks = GroupedChartHelpers.calculateYAxisTiсks(
-          defaultTicks,
-          Y_AXIS_TICKS_OPTIONS.CPI_STEP,
-          Y_AXIS_TICKS_OPTIONS.ROUND_CPI
-        );
-        return cplTicks;
-    }
-  };
-
   return (
     <ResponsiveContainer width={responsiveContainer.width} height={responsiveContainer.height}>
       <LineChart data={chartData} margin={lineChart.margin}>
@@ -96,7 +96,7 @@ const GroupedChart: React.FC<Props> = ({ dataKey, selectedOptions, statisticsBy,
         <YAxis
           domain={[(min: number) => min, (max: number) => max]}
           width={YAxisWidth}
-          ticks={getYAxisTicks()}
+          ticks={yAxisTicks}
           tickMargin={yAxisOptions.tickMargin}
           minTickGap={yAxisOptions.minTickGap}
           tickSize={yAxisOptions.tickSize}

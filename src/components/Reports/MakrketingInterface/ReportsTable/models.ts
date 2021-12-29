@@ -1,5 +1,12 @@
-export interface IMixedReportsResultByPediod {
-  [key: string]: string | number; // There may be one of the keys here [source or targetologId with targetologName]
+export interface ICalculatedMetricsBySources {
+  source: string;
+  conversions: number;
+  cpi: number;
+}
+
+export interface IСalculatedMetricsTargetologsId {
+  targetologId: string;
+  targetologName: string;
   conversions: number;
   cpi: number;
 }
