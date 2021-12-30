@@ -9,7 +9,7 @@ import { makeStyles } from '@mui/styles';
 import { IReport, ITableFormat } from '../GroupedReportsChart/models';
 import { IMarketingInterface } from '../models';
 import { ReportsTableHelpers } from './helpers';
-import { ICalculatedMetricsBySources, IСalculatedMetricsTargetologsId } from './models';
+import { IMetricsBySource, IMetricsByTargetolog } from './models';
 
 interface Props {
   reports: IReport[];
@@ -54,7 +54,7 @@ const ReportsTable: React.FC<Props> = ({ reports, tableFormat, statisticsBy }) =
   const classes = useStyles();
 
   const calculatedReports = useMemo(() => {
-    const sumOfMetricsByTableFormat = ReportsTableHelpers.calculateSumOfMeticsByTableFormat(reports, tableFormat, statisticsBy);
+    const sumOfMetricsByTableFormat = ReportsTableHelpers.calculateSumOfMetricsByTableFormat(reports, tableFormat, statisticsBy);
 
     const sumOfConversions = ReportsTableHelpers.getSumOfConversions(sumOfMetricsByTableFormat);
     const avgCpl = ReportsTableHelpers.getAvgCpl(sumOfMetricsByTableFormat);
@@ -75,11 +75,11 @@ const ReportsTable: React.FC<Props> = ({ reports, tableFormat, statisticsBy }) =
           </TableRow>
         </TableHead>
         <TableBody>
-          {calculatedReports.sumOfMetricsByTableFormat.map((report: ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId) => {
+          {calculatedReports.sumOfMetricsByTableFormat.map((report: IMetricsBySource | IMetricsByTargetolog) => {
             const keyName =
               statisticsBy === IMarketingInterface.bySources
-                ? (report as ICalculatedMetricsBySources).source
-                : (report as IСalculatedMetricsTargetologsId).targetologName;
+                ? (report as IMetricsBySource).source
+                : (report as IMetricsByTargetolog).targetologName;
             return (
               <TableRow className={classes.reportsBodyRow} key={keyName}>
                 <TableCell className={classes.reportsCell} component="td">

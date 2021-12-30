@@ -1,22 +1,18 @@
 import moment from 'moment';
 import { IReport, ITableFormat, MetricsKeys } from '../GroupedReportsChart/models';
 import { IMarketingInterface } from '../models';
-import { ICalculatedMetricsBySources, IСalculatedMetricsTargetologsId, ICalculatedReportMetricsByKey } from './models';
+import { IMetricsBySource, IMetricsByTargetolog, ICalculatedReportMetricsByKey } from './models';
 
 class ReportsTableHelpers {
-  static calculateSumOfMeticsByTableFormat = (reports: IReport[], tableFormat: ITableFormat, statisticsBy: IMarketingInterface) => {
+  static calculateSumOfMetricsByTableFormat = (reports: IReport[], tableFormat: ITableFormat, statisticsBy: IMarketingInterface) => {
     const currentReportsByTableFormat = this.getCurrentReportsByTableFormat(reports, tableFormat);
 
-    const calculatedConversions = this.getSumOfMeticByMetricAndMarketingKey(
-      currentReportsByTableFormat,
-      MetricsKeys.CONVERSIONS,
-      statisticsBy
-    );
-    const calculatedCpl = this.getSumOfMeticByMetricAndMarketingKey(currentReportsByTableFormat, MetricsKeys.CPI, statisticsBy);
+    const calculatedConversions = this.getSumOfMetricByMarketingKey(currentReportsByTableFormat, MetricsKeys.CONVERSIONS, statisticsBy);
+    const calculatedCpl = this.getSumOfMetricByMarketingKey(currentReportsByTableFormat, MetricsKeys.CPI, statisticsBy);
 
     const uniqueReportsByTargetologs = [...new Map(reports.map((report: IReport) => [report.targetologId, report])).values()];
 
-    const calculatedMetics = this.getCalculatedMetrics(
+    const calculatedMetrics = this.getCalculatedMetrics(
       calculatedConversions,
       calculatedCpl,
       tableFormat,
@@ -24,7 +20,7 @@ class ReportsTableHelpers {
       uniqueReportsByTargetologs
     );
 
-    return calculatedMetics;
+    return calculatedMetrics;
   };
 
   static getCurrentReportsByTableFormat = (reports: IReport[], tableFormat: ITableFormat): IReport[] => {
@@ -37,7 +33,7 @@ class ReportsTableHelpers {
     return reports;
   };
 
-  static getSumOfMeticByMetricAndMarketingKey = (
+  static getSumOfMetricByMarketingKey = (
     reports: IReport[],
     metricKey: MetricsKeys,
     statisticsBy: IMarketingInterface
@@ -62,10 +58,10 @@ class ReportsTableHelpers {
     tableFormat: ITableFormat,
     statisticsBy: IMarketingInterface,
     uniqueReportsByTargetologs: IReport[]
-  ) => {
+  ): (IMetricsBySource | IMetricsByTargetolog)[] => {
     const monthDays: number = moment().daysInMonth();
 
-    const calculatedMetrics: (ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId)[] = Object.keys(conversions).map((propKey) => {
+    const calculatedMetrics: (IMetricsBySource | IMetricsByTargetolog)[] = Object.keys(conversions).map((propKey) => {
       const conversionValue = conversions[propKey];
       const cpl = cpls[propKey];
       const cplValue = tableFormat === ITableFormat.daily ? parseFloat(cpl.toFixed(1)) : parseFloat((cpl / monthDays).toFixed(1));
@@ -90,18 +86,18 @@ class ReportsTableHelpers {
     return calculatedMetrics;
   };
 
-  static getSumOfConversions = (mixedReports: (ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId)[]): number => {
+  static getSumOfConversions = (mixedReports: (IMetricsBySource | IMetricsByTargetolog)[]): number => {
     const conversionsByMonth = mixedReports.reduce(
-      (acc: number, curr: ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId) => acc + curr.conversions,
+      (acc: number, curr: IMetricsBySource | IMetricsByTargetolog) => acc + curr.conversions,
       0
     );
     return conversionsByMonth;
   };
 
-  static getAvgCpl = (mixedReports: (ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId)[]): number => {
+  static getAvgCpl = (calculatedMetrics: (IMetricsBySource | IMetricsByTargetolog)[]): number => {
     const avgCpl =
-      mixedReports.reduce((acc: number, current: ICalculatedMetricsBySources | IСalculatedMetricsTargetologsId) => acc + current.cpi, 0) /
-      mixedReports.length;
+      calculatedMetrics.reduce((acc: number, current: IMetricsBySource | IMetricsByTargetolog) => acc + current.cpi, 0) /
+      calculatedMetrics.length;
     return parseFloat(avgCpl.toFixed(2));
   };
 
