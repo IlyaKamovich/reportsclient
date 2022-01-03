@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { IReport, SourceKeys, IReports, IFirstAndLastDayInMonth } from './GroupedReportsChart/models';
+import { IReport, SourceKeys, IFirstAndLastDayInMonth } from './GroupedReportsChart/models';
 import axios from 'axios';
 
 interface IUseReports {
@@ -20,7 +20,7 @@ const useReports = (endPoint: string, startWith?: Date, endOn?: Date, source?: S
       try {
         const { firstDayOfMonth, lastDayOfMonth } = getFirstAndLastDayInMonth();
 
-        const response = await axios.get<IReports>(endPoint, {
+        const response = await axios.get<IReport[]>(endPoint, {
           params: {
             source: source,
             startWith: startWith || firstDayOfMonth,
@@ -28,9 +28,7 @@ const useReports = (endPoint: string, startWith?: Date, endOn?: Date, source?: S
           },
         });
 
-        const { reports } = response.data;
-
-        setReports(reports);
+        setReports(response.data);
         setLoading(false);
       } catch (e: any) {
         setError(true);
@@ -49,8 +47,8 @@ const useReports = (endPoint: string, startWith?: Date, endOn?: Date, source?: S
     const year = date.getFullYear();
     const month = date.getMonth();
 
-    const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month + 1, 1);
+    const firstDayOfMonth = new Date(year, month - 1, 1);
+    const lastDayOfMonth = new Date(year, month, 1);
 
     return { firstDayOfMonth, lastDayOfMonth };
   };

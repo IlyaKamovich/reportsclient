@@ -1,14 +1,14 @@
 import React from 'react';
-import { IMarketingInterface } from './models';
+import { MarketingReportViews } from './models';
 import { useReports } from './useReports';
 import { GroupedChartContainer } from './GroupedReportsChart';
 import { Spinner } from 'components/Common/Spinner';
 import { ReportsTable } from './ReportsTable';
 import { makeStyles } from '@mui/styles';
-import { ITableFormat, MetricsKeys } from './GroupedReportsChart/models';
+import { TableFormat, MetricsKeys } from './GroupedReportsChart/models';
 
 interface Props {
-  statisticsBy: IMarketingInterface;
+  statisticsBy: MarketingReportViews;
 }
 
 const useStyles = makeStyles({
@@ -58,12 +58,12 @@ const MarketingInterface: React.FC<Props> = ({ statisticsBy }) => {
   return (
     <div className={classes.wrapper}>
       <div className={classes.wrapperBoxTables}>
-        <ReportsTable reports={reports} tableFormat={ITableFormat.daily} statisticsBy={statisticsBy} />
-        <ReportsTable reports={reports} tableFormat={ITableFormat.growing} statisticsBy={statisticsBy} />
+        <ReportsTable reports={reports} tableFormat={TableFormat.daily} statisticsBy={statisticsBy} />
+        <ReportsTable reports={reports} tableFormat={TableFormat.growing} statisticsBy={statisticsBy} />
       </div>
       <div className={classes.wrapperBoxCharts}>
         <GroupedChartContainer reports={reports} dataKey={MetricsKeys.CONVERSIONS} statisticsBy={statisticsBy} title="Конверсии" />
-        <GroupedChartContainer reports={reports} dataKey={MetricsKeys.CPI} statisticsBy={statisticsBy} title="Цпл" />
+        <GroupedChartContainer reports={reports} dataKey={MetricsKeys.CPL} statisticsBy={statisticsBy} title="Цпл" />
       </div>
     </div>
   );

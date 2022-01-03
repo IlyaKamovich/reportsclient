@@ -1,16 +1,15 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList, Dot } from 'recharts';
-import { IChartData, IReport, MetricsKeys } from './models';
 import { CHART_OPTIONS, CHART_COLORS, Y_AXIS_TICKS_OPTIONS, Y_AXIS_WIDTH } from './constants';
-import { IMarketingInterface } from '../models';
-import { GroupedChartHelpers } from './helpers';
+import { IChartData, IReport, MetricsKeys } from './models';
 import { CustomTooltip } from './GroupedChartTooltip';
-import { AxisDomain, AxisDomainItem } from 'recharts/types/util/types';
+import { MarketingReportViews } from '../models';
+import { GroupedChartHelpers } from './helpers';
 
 interface Props {
   selectedOptions: string[];
   trendline?: boolean;
-  statisticsBy: IMarketingInterface;
+  statisticsBy: MarketingReportViews;
   chartData: IChartData[];
   dataKey: MetricsKeys;
   reports: IReport[];
@@ -22,7 +21,7 @@ const GroupedChart: React.FC<Props> = ({ dataKey, selectedOptions, statisticsBy,
   const [xAxisKey]: string[] = useMemo(() => Object.keys(chartData[0]), [chartData]);
   const uniqueReports = useMemo(() => GroupedChartHelpers.getUniqueReports(reports), [reports]);
   const YAxisWidth = useMemo(
-    () => (dataKey === MetricsKeys.CONVERSIONS ? Y_AXIS_WIDTH.CONVERSIONS_CHART : Y_AXIS_WIDTH.CPI_CHART),
+    () => (dataKey === MetricsKeys.CONVERSIONS ? Y_AXIS_WIDTH.CONVERSIONS_CHART : Y_AXIS_WIDTH.CPL_CHART),
     [dataKey]
   );
 
@@ -38,11 +37,11 @@ const GroupedChart: React.FC<Props> = ({ dataKey, selectedOptions, statisticsBy,
           Y_AXIS_TICKS_OPTIONS.ROUND_CONVERSIONS
         );
         return conversionsTicks;
-      case MetricsKeys.CPI:
+      case MetricsKeys.CPL:
         const cplTicks = GroupedChartHelpers.calculateYAxisTiсks(
           defaultTicks,
-          Y_AXIS_TICKS_OPTIONS.CPI_STEP,
-          Y_AXIS_TICKS_OPTIONS.ROUND_CPI
+          Y_AXIS_TICKS_OPTIONS.CPL_STEP,
+          Y_AXIS_TICKS_OPTIONS.ROUND_CPL
         );
         return cplTicks;
     }
@@ -80,7 +79,6 @@ const GroupedChart: React.FC<Props> = ({ dataKey, selectedOptions, statisticsBy,
           fill={CHART_COLORS[index]}
           fontSize={labelList.fontSize}
         />
-        ;
       </Line>
     ));
 

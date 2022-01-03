@@ -10,12 +10,8 @@ export interface IReport {
   formattedDate: string;
   metrics: {
     conversions: number;
-    cpi: number;
+    cpl: number;
   };
-}
-
-export interface IReports {
-  reports: IReport[];
 }
 
 export interface IReportsByKey {
@@ -32,13 +28,8 @@ export enum SourceKeys {
   TT = 'TT',
 }
 
-export interface IGroupedReport {
-  formattedDate: string;
-  [key: string]: string | number | { cpi: number; conversions: number };
-}
-
 export enum MetricsKeys {
-  CPI = 'cpi',
+  CPL = 'cpl',
   CONVERSIONS = 'conversions',
 }
 
@@ -57,7 +48,7 @@ export interface ISumReport {
   sumOfMetric: number; // there may be one of the metrics
 }
 
-export enum ITableFormat {
+export enum TableFormat {
   daily = 'daily',
   growing = 'growing',
 }
@@ -142,11 +133,11 @@ export interface IChartOptions {
 export interface IYAxisTicksOptions {
   ROUND_CONVERSIONS: number;
   CONVERSIONS_STEP: number;
-  CPI_STEP: number;
-  ROUND_CPI: number;
+  CPL_STEP: number;
+  ROUND_CPL: number;
 }
 
 export interface IYAxisWidth {
   CONVERSIONS_CHART: number;
-  CPI_CHART: number;
+  CPL_CHART: number;
 }

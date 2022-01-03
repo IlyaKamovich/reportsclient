@@ -1,4 +1,4 @@
-export enum IMarketingInterface {
+export enum MarketingReportViews {
   bySources = 'targetologSource',
   byTargetologs = 'targetologId',
 }

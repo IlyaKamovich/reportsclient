@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReportsTableHelpers } from '../ReportsTable/helpers';
-import { IPayloadTooltip, ITableFormat } from './models';
+import { IPayloadTooltip, TableFormat } from './models';
 import { makeStyles } from '@mui/styles';
 
 interface Props {
@@ -44,7 +44,7 @@ const CustomTooltip: React.FC<Props> = ({ active, payload }) => {
   return (
     <div className={classes.tooltip}>
       <div className={classes.tooltipHeader}>
-        <h2 className={classes.headerTitle}>Дата - {ReportsTableHelpers.renderDateByFormat(new Date(), ITableFormat.daily)}</h2>
+        <h2 className={classes.headerTitle}>Дата - {ReportsTableHelpers.renderDateByFormat(new Date(), TableFormat.daily)}</h2>
       </div>
       {payload.map((i: IPayloadTooltip) => (
         <div className={classes.tooltipBody} key={i.dataKey}>

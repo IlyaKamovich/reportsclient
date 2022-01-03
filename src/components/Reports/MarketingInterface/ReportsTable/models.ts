@@ -1,14 +1,14 @@
 export interface IMetricsBySource {
   source: string;
   conversions: number;
-  cpi: number;
+  cpl: number;
 }
 
 export interface IMetricsByTargetolog {
   targetologId: string;
   targetologName: string;
   conversions: number;
-  cpi: number;
+  cpl: number;
 }
 
 export interface ICalculatedReportMetricsByKey {

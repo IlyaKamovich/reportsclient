@@ -1,4 +1,4 @@
-import { IMarketingInterface } from '../models';
+import { MarketingReportViews } from '../models';
 import {
   MetricsKeys,
   IReport,
@@ -10,23 +10,26 @@ import {
 } from './models';
 import { calculateTrendline } from './trendline';
 import _range from 'lodash/range';
+import _sortBy from 'lodash/sortBy';
+import _values from 'lodash/values';
+import _merge from 'lodash/merge';
+import _keyBy from 'lodash/keyBy';
 
 class GroupedChartHelpers {
-  static getCurrentChartData = (dataKey: MetricsKeys, reports: IReport[], statisticsBy: IMarketingInterface): IChartData[] => {
+  static getCurrentChartData = (dataKey: MetricsKeys, reports: IReport[], statisticsBy: MarketingReportViews): IChartData[] => {
     const sumOfMetricsByDataKey = GroupedChartHelpers.getSumOfMetricsByDataKey(dataKey, reports, statisticsBy);
     const groupedReportsByDataAndStatisticKey = GroupedChartHelpers.getGroupedReportsByDataAndStatisticKey(reports, dataKey, statisticsBy);
 
-    const chartData = sumOfMetricsByDataKey.map((item, index) => {
-      return {
-        ...item,
-        ...groupedReportsByDataAndStatisticKey.find((itmInner) => itmInner.formattedDate === sumOfMetricsByDataKey[index].formattedDate),
-      };
-    });
+    const mergedKey = 'formattedDate';
+    const sortedChartData = _sortBy(
+      _values(_merge(_keyBy(sumOfMetricsByDataKey, mergedKey), _keyBy(groupedReportsByDataAndStatisticKey, mergedKey))),
+      [mergedKey]
+    );
 
-    return chartData;
+    return sortedChartData;
   };
 
-  static getSumOfMetricsByDataKey = (dataKey: MetricsKeys, reports: IReport[], statisticsBy: IMarketingInterface): ISumReport[] => {
+  static getSumOfMetricsByDataKey = (dataKey: MetricsKeys, reports: IReport[], statisticsBy: MarketingReportViews): ISumReport[] => {
     const sumOfMetricsByKey = reports.reduce((acc: ISumReport[], current: IReport) => {
       const data = acc.find((i: ISumReport) => i.formattedDate === current.formattedDate);
 
@@ -40,7 +43,7 @@ class GroupedChartHelpers {
       ];
     }, []);
 
-    if (dataKey !== MetricsKeys.CPI) {
+    if (dataKey !== MetricsKeys.CPL) {
       return sumOfMetricsByKey;
     }
 
@@ -56,7 +59,7 @@ class GroupedChartHelpers {
   static getGroupedReportsByDataAndStatisticKey = (
     reports: IReport[],
     dataKey: MetricsKeys,
-    statisticsBy: IMarketingInterface
+    statisticsBy: MarketingReportViews
   ): IGroupedReportsByDateAndDataKey[] => {
     const groupedArray = reports.reduce((acc: IGroupedReportsByDateAndDataKey[], current: IReport) => {
       const nodeReport = acc.find((i) => i.formattedDate === current.formattedDate);
@@ -72,7 +75,47 @@ class GroupedChartHelpers {
       return [...acc, { formattedDate: current.formattedDate, [key]: parseFloat(current.metrics[dataKey].toFixed(2)) }];
     }, []);
 
-    return groupedArray;
+    if (statisticsBy == MarketingReportViews.byTargetologs) {
+      return groupedArray;
+    }
+
+    const groupedCountOfKeys = reports.reduce((acc: IGroupedReportsByDateAndDataKey[], curr: IReport) => {
+      const node = acc.find((i) => i.formattedDate === curr.formattedDate);
+
+      if (node) {
+        return [
+          ...acc.filter((i) => i.formattedDate !== curr.formattedDate),
+          {
+            ...node,
+            formattedDate: curr.formattedDate,
+            [curr.targetologSource]: ((node[curr.targetologSource] as number) || 0) + 1,
+          },
+        ];
+      }
+
+      return [...acc, { formattedDate: curr.formattedDate, [curr.targetologSource]: [curr.targetologSource].length }];
+    }, []);
+
+    const groupedArrayByAvgCpl: IGroupedReportsByDateAndDataKey[] = groupedArray.map(
+      (item: IGroupedReportsByDateAndDataKey, index: number) => {
+        const objKeys: string[] = Object.keys(item).filter((item: string) => item !== 'formattedDate');
+
+        const objWithAvgCpl: IGroupedReportsByDateAndDataKey = objKeys.reduce((acc: any, key: string) => {
+          const total = item[key] as number;
+          const count = groupedCountOfKeys[index][key] as number;
+
+          return {
+            ...acc,
+            [key]: parseFloat((total / count).toFixed(2)),
+            formattedDate: item.formattedDate,
+          };
+        }, {});
+
+        return objWithAvgCpl;
+      }
+    );
+
+    return groupedArrayByAvgCpl;
   };
 
   static addToChartTrendline = (reportsByKey: IReportsByKey[], dataKey: MetricsKeys): IReportsWithTrendline[] => {
@@ -115,10 +158,10 @@ class GroupedChartHelpers {
     chartKey: string,
     dataKey: MetricsKeys,
     selectedOptions: string[],
-    statisticsBy: IMarketingInterface,
+    statisticsBy: MarketingReportViews,
     uniqueReports: IReport[]
   ): string => {
-    if (dataKey === MetricsKeys.CPI && selectedOptions.length === 0) {
+    if (dataKey === MetricsKeys.CPL && selectedOptions.length === 0) {
       return 'Средний цпл';
     }
 
@@ -126,7 +169,7 @@ class GroupedChartHelpers {
       return 'Количество заявок';
     }
 
-    if (statisticsBy === IMarketingInterface.byTargetologs) {
+    if (statisticsBy === MarketingReportViews.byTargetologs) {
       const currentLegendLabel = uniqueReports.find((el: IReport) => el.targetologId === chartKey)?.targetologName;
       return currentLegendLabel || chartKey;
     }

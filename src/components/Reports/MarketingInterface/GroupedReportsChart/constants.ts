@@ -52,11 +52,11 @@ export const CHART_OPTIONS: IChartOptions = {
 export const Y_AXIS_TICKS_OPTIONS: IYAxisTicksOptions = {
   ROUND_CONVERSIONS: 100,
   CONVERSIONS_STEP: 100,
-  CPI_STEP: 0.2,
-  ROUND_CPI: 1,
+  CPL_STEP: 0.2,
+  ROUND_CPL: 1,
 };
 
 export const Y_AXIS_WIDTH: IYAxisWidth = {
   CONVERSIONS_CHART: 40,
-  CPI_CHART: 35,
+  CPL_CHART: 35,
 };

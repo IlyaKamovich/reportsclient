@@ -6,15 +6,15 @@ import TableFooter from '@mui/material/TableFooter';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { makeStyles } from '@mui/styles';
-import { IReport, ITableFormat } from '../GroupedReportsChart/models';
-import { IMarketingInterface } from '../models';
+import { IReport, TableFormat } from '../GroupedReportsChart/models';
+import { MarketingReportViews } from '../models';
 import { ReportsTableHelpers } from './helpers';
 import { IMetricsBySource, IMetricsByTargetolog } from './models';
 
 interface Props {
   reports: IReport[];
-  tableFormat: ITableFormat;
-  statisticsBy: IMarketingInterface;
+  tableFormat: TableFormat;
+  statisticsBy: MarketingReportViews;
 }
 
 const useStyles = makeStyles({
@@ -77,7 +77,7 @@ const ReportsTable: React.FC<Props> = ({ reports, tableFormat, statisticsBy }) =
         <TableBody>
           {calculatedReports.sumOfMetricsByTableFormat.map((report: IMetricsBySource | IMetricsByTargetolog) => {
             const keyName =
-              statisticsBy === IMarketingInterface.bySources
+              statisticsBy === MarketingReportViews.bySources
                 ? (report as IMetricsBySource).source
                 : (report as IMetricsByTargetolog).targetologName;
             return (
@@ -89,7 +89,7 @@ const ReportsTable: React.FC<Props> = ({ reports, tableFormat, statisticsBy }) =
                   {report.conversions}
                 </TableCell>
                 <TableCell className={classes.reportsCell} component="td">
-                  {report.cpi}
+                  {report.cpl}
                 </TableCell>
               </TableRow>
             );

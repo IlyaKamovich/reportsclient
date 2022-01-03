@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { IReport, MetricsKeys } from './models';
 import { makeStyles } from '@mui/styles';
-import { IMarketingInterface } from '../models';
+import { MarketingReportViews } from '../models';
 import { GroupedChartHelpers } from './helpers';
 import GroupedChart from './GroupedChart';
 import Checkbox from '@mui/material/Checkbox';
@@ -15,7 +15,7 @@ interface Props {
   reports: IReport[];
   dataKey: MetricsKeys;
   title: string;
-  statisticsBy: IMarketingInterface;
+  statisticsBy: MarketingReportViews;
 }
 
 const useStyles = makeStyles({
@@ -70,7 +70,7 @@ const GroupedChartContainer: React.FC<Props> = ({ reports, dataKey, title, stati
           disableCloseOnSelect
           disableListWrap={true}
           value={selectedOptions}
-          onChange={(__: React.SyntheticEvent<Element, Event>, value: string[]) => setSelectedOptions(value)}
+          onChange={(event: React.SyntheticEvent<Element, Event>, value: string[]) => setSelectedOptions(value)}
           className={classes.select}
           multiple
           autoHighlight
