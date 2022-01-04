@@ -56,39 +56,36 @@ const GroupedChart: React.FC<Props> = ({ dataKey, selectedOptions, statisticsBy,
     }
 
     const dataSet = chartData[chartData.length - 1];
-    const chartLineKeys = Object.keys(dataSet).filter((e) => e === 'sumOfMetric');
+    const chartLineKeys = Object.keys(dataSet).filter((e) => e === 'total');
     setChartKeys(chartLineKeys);
   }, [selectedOptions]);
-
-  const drawChartLines = () => {
-    const chartLines = chartKeys.map((chartKey: string, index: number) => (
-      <Line
-        name={GroupedChartHelpers.formatChartLabel(chartKey, dataKey, selectedOptions, statisticsBy, uniqueReports)}
-        isAnimationActive={line.isAnimationActive}
-        fill={CHART_COLORS[index]}
-        stroke={CHART_COLORS[index]}
-        strokeWidth={line.strokeWidth}
-        dataKey={chartKey}
-        key={chartKey}
-        dot={<Dot strokeWidth={line.dot.strokeWidth} fill={CHART_COLORS[index]} color={CHART_COLORS[index]} stroke={CHART_COLORS[index]} />}
-      >
-        <LabelList
-          dataKey={chartKey}
-          dy={labelList.dy}
-          fontWeight={labelList.fontWeight}
-          fill={CHART_COLORS[index]}
-          fontSize={labelList.fontSize}
-        />
-      </Line>
-    ));
-
-    return chartLines;
-  };
 
   return (
     <ResponsiveContainer width={responsiveContainer.width} height={responsiveContainer.height}>
       <LineChart data={chartData} margin={lineChart.margin}>
-        {drawChartLines()}
+        {chartKeys.map((chartKey: string, index: number) => {
+          const lineColor: string = CHART_COLORS[index];
+          return (
+            <Line
+              name={GroupedChartHelpers.formatChartLabel(chartKey, dataKey, selectedOptions, statisticsBy, uniqueReports)}
+              isAnimationActive={line.isAnimationActive}
+              fill={lineColor}
+              stroke={lineColor}
+              strokeWidth={line.strokeWidth}
+              dataKey={chartKey}
+              key={chartKey}
+              dot={<Dot strokeWidth={line.dot.strokeWidth} fill={lineColor} color={lineColor} stroke={lineColor} />}
+            >
+              <LabelList
+                dataKey={chartKey}
+                dy={labelList.dy}
+                fontWeight={labelList.fontWeight}
+                fill={lineColor}
+                fontSize={labelList.fontSize}
+              />
+            </Line>
+          );
+        })}
         <XAxis padding={xAxisOptions.padding} dataKey={xAxisKey} />
         <CartesianGrid vertical={cartesianGrid.vertical} />
         <YAxis

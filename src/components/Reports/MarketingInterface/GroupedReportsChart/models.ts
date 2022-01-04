@@ -43,11 +43,6 @@ export interface IGroupedReportsByDateAndDataKey {
   [key: string]: string | number;
 }
 
-export interface ISumReport {
-  formattedDate: string;
-  sumOfMetric: number; // there may be one of the metrics
-}
-
 export enum TableFormat {
   daily = 'daily',
   growing = 'growing',
@@ -56,7 +51,7 @@ export enum TableFormat {
 export interface IChartData {
   [key: string]: number | string;
   formattedDate: string;
-  sumOfMetric: number;
+  total: number;
 }
 
 export interface IPayloadTooltip {

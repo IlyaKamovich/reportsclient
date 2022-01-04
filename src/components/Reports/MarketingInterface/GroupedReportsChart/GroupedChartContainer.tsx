@@ -55,10 +55,7 @@ const GroupedChartContainer: React.FC<Props> = ({ reports, dataKey, title, stati
 
   const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
 
-  const chartData = useMemo(
-    () => GroupedChartHelpers.getCurrentChartData(dataKey, reports, statisticsBy),
-    [dataKey, reports, statisticsBy]
-  );
+  const chartData = useMemo(() => GroupedChartHelpers.getChartData(dataKey, reports, statisticsBy), [dataKey, reports, statisticsBy]);
 
   const defaultSelectOptions: string[] = useSelectOptions(chartData);
 

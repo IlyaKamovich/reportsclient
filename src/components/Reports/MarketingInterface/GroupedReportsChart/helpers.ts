@@ -1,121 +1,86 @@
 import { MarketingReportViews } from '../models';
-import {
-  MetricsKeys,
-  IReport,
-  ISumReport,
-  IReportsByKey,
-  IReportsWithTrendline,
-  IGroupedReportsByDateAndDataKey,
-  IChartData,
-} from './models';
+import { MetricsKeys, IReport, IReportsByKey, IReportsWithTrendline, IGroupedReportsByDateAndDataKey, IChartData } from './models';
 import { calculateTrendline } from './trendline';
 import _range from 'lodash/range';
-import _sortBy from 'lodash/sortBy';
-import _values from 'lodash/values';
-import _merge from 'lodash/merge';
-import _keyBy from 'lodash/keyBy';
+import _isNumber from 'lodash/isNumber';
 
 class GroupedChartHelpers {
-  static getCurrentChartData = (dataKey: MetricsKeys, reports: IReport[], statisticsBy: MarketingReportViews): IChartData[] => {
-    const sumOfMetricsByDataKey = GroupedChartHelpers.getSumOfMetricsByDataKey(dataKey, reports, statisticsBy);
-    const groupedReportsByDataAndStatisticKey = GroupedChartHelpers.getGroupedReportsByDataAndStatisticKey(reports, dataKey, statisticsBy);
-
-    const mergedKey = 'formattedDate';
-    const sortedChartData = _sortBy(
-      _values(_merge(_keyBy(sumOfMetricsByDataKey, mergedKey), _keyBy(groupedReportsByDataAndStatisticKey, mergedKey))),
-      [mergedKey]
-    );
-
-    return sortedChartData;
-  };
-
-  static getSumOfMetricsByDataKey = (dataKey: MetricsKeys, reports: IReport[], statisticsBy: MarketingReportViews): ISumReport[] => {
-    const sumOfMetricsByKey = reports.reduce((acc: ISumReport[], current: IReport) => {
-      const data = acc.find((i: ISumReport) => i.formattedDate === current.formattedDate);
-
-      if (!data) {
-        return [...acc, { formattedDate: current.formattedDate, sumOfMetric: current.metrics[dataKey] }];
-      }
-
-      return [
-        ...acc.filter((i: ISumReport) => i.formattedDate !== data.formattedDate),
-        { formattedDate: current.formattedDate, sumOfMetric: current.metrics[dataKey] + data.sumOfMetric },
-      ];
-    }, []);
-
-    if (dataKey !== MetricsKeys.CPL) {
-      return sumOfMetricsByKey;
-    }
-
-    const countOfReportsByStatisticsKey = [...new Set(reports.map((report: IReport) => report[statisticsBy]))].length;
-
-    const avgSumOfCpl = sumOfMetricsByKey.map((report: ISumReport) => {
-      return { ...report, sumOfMetric: parseFloat((report.sumOfMetric / countOfReportsByStatisticsKey).toFixed(2)) };
-    });
-
-    return avgSumOfCpl;
-  };
-
-  static getGroupedReportsByDataAndStatisticKey = (
-    reports: IReport[],
-    dataKey: MetricsKeys,
-    statisticsBy: MarketingReportViews
-  ): IGroupedReportsByDateAndDataKey[] => {
-    const groupedArray = reports.reduce((acc: IGroupedReportsByDateAndDataKey[], current: IReport) => {
-      const nodeReport = acc.find((i) => i.formattedDate === current.formattedDate);
+  static getChartData = (dataKey: MetricsKeys, reports: IReport[], statisticsBy: MarketingReportViews): IChartData[] => {
+    const groupedData: IChartData[] = reports.reduce((acc: IChartData[], current: IReport) => {
+      const node = acc.find((i: IChartData) => i.formattedDate === current.formattedDate);
       const key = current[statisticsBy];
-
-      if (nodeReport) {
-        return [
-          ...acc.filter((i: IGroupedReportsByDateAndDataKey) => i.formattedDate !== current.formattedDate),
-          { ...nodeReport, [key]: parseFloat((current.metrics[dataKey] + Number(nodeReport[key] || 0)).toFixed(2)) },
-        ];
-      }
-
-      return [...acc, { formattedDate: current.formattedDate, [key]: parseFloat(current.metrics[dataKey].toFixed(2)) }];
-    }, []);
-
-    if (statisticsBy == MarketingReportViews.byTargetologs) {
-      return groupedArray;
-    }
-
-    const groupedCountOfKeys = reports.reduce((acc: IGroupedReportsByDateAndDataKey[], curr: IReport) => {
-      const node = acc.find((i) => i.formattedDate === curr.formattedDate);
 
       if (node) {
         return [
-          ...acc.filter((i) => i.formattedDate !== curr.formattedDate),
+          ...acc.filter((i: IChartData) => i.formattedDate !== current.formattedDate),
           {
             ...node,
-            formattedDate: curr.formattedDate,
-            [curr.targetologSource]: ((node[curr.targetologSource] as number) || 0) + 1,
+            formattedDate: current.formattedDate,
+            total: current.metrics[dataKey] + node.total,
+            [key]: parseFloat((current.metrics[dataKey] + Number(node[key] || 0)).toFixed(2)),
           },
         ];
       }
 
-      return [...acc, { formattedDate: curr.formattedDate, [curr.targetologSource]: [curr.targetologSource].length }];
+      return [
+        ...acc,
+        { formattedDate: current.formattedDate, total: current.metrics[dataKey], [key]: parseFloat(current.metrics[dataKey].toFixed(2)) },
+      ];
     }, []);
 
-    const groupedArrayByAvgCpl: IGroupedReportsByDateAndDataKey[] = groupedArray.map(
-      (item: IGroupedReportsByDateAndDataKey, index: number) => {
-        const objKeys: string[] = Object.keys(item).filter((item: string) => item !== 'formattedDate');
+    if (dataKey === MetricsKeys.CPL && statisticsBy === MarketingReportViews.bySources) {
+      const groupedCountOfKeys = reports.reduce((acc: IGroupedReportsByDateAndDataKey[], curr: IReport) => {
+        const node = acc.find((i) => i.formattedDate === curr.formattedDate);
 
-        const objWithAvgCpl: IGroupedReportsByDateAndDataKey = objKeys.reduce((acc: any, key: string) => {
-          const total = item[key] as number;
-          const count = groupedCountOfKeys[index][key] as number;
+        if (node) {
+          return [
+            ...acc.filter((i) => i.formattedDate !== curr.formattedDate),
+            {
+              ...node,
+              formattedDate: curr.formattedDate,
+              [curr.targetologSource]: ((node[curr.targetologSource] as number) || 0) + 1,
+            },
+          ];
+        }
 
-          return {
-            ...acc,
-            [key]: parseFloat((total / count).toFixed(2)),
-            formattedDate: item.formattedDate,
-          };
-        }, {});
+        return [...acc, { formattedDate: curr.formattedDate, [curr.targetologSource]: [curr.targetologSource].length }];
+      }, []);
 
-        return objWithAvgCpl;
-      }
-    );
+      const groupedArrayByAvgCpl: IChartData[] = groupedData.map((item: IChartData, index: number) => {
+        const objKeys: string[] = Object.keys(item).filter((item: string) => item !== 'formattedDate' && item !== 'total');
 
-    return groupedArrayByAvgCpl;
+        const chartObj = {} as IChartData;
+
+        for (const key of objKeys) {
+          const { total } = item;
+          const totalByKey = item[key] as number;
+          const countByKey = groupedCountOfKeys[index][key] as number;
+
+          const objValues = Object.values(groupedCountOfKeys[index]).filter((item: string | number) => _isNumber(item)) as number[];
+          const totalCount = objValues.reduce((acc: number, current: number) => acc + current, 0);
+
+          chartObj.formattedDate = item.formattedDate;
+          chartObj.total = parseFloat((total / totalCount).toFixed(2));
+          chartObj[key] = parseFloat((totalByKey / countByKey).toFixed(2));
+        }
+
+        return chartObj;
+      });
+
+      return groupedArrayByAvgCpl;
+    }
+
+    if (dataKey !== MetricsKeys.CPL) {
+      return groupedData;
+    }
+
+    const countOfReportsByStatisticsKey = [...new Set(reports.map((report: IReport) => report[statisticsBy]))].length;
+
+    const avgSumOfCpl = groupedData.map((report: IChartData) => {
+      return { ...report, total: parseFloat((report.total / countOfReportsByStatisticsKey).toFixed(2)) };
+    });
+
+    return avgSumOfCpl;
   };
 
   static addToChartTrendline = (reportsByKey: IReportsByKey[], dataKey: MetricsKeys): IReportsWithTrendline[] => {
@@ -128,11 +93,11 @@ class GroupedChartHelpers {
 
   static getDefaultTicks = (chartData: IChartData[], selectedOptionsLength: number): number[] => {
     if (selectedOptionsLength === 0) {
-      const defaultTicks = chartData.map((item) => item.sumOfMetric);
+      const defaultTicks = chartData.map((item) => item.total);
       return defaultTicks;
     }
 
-    const defaultTicks = chartData.map(({ sumOfMetric, formattedDate, ...rest }) => rest).flatMap(Object.values);
+    const defaultTicks = chartData.map(({ total, formattedDate, ...rest }) => rest).flatMap(Object.values);
     return defaultTicks;
   };
 
